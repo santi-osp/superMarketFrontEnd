@@ -1,0 +1,116 @@
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  box-sizing: border-box;
+  position: relative;
+  overflow: hidden;
+}
+
+.login-page::before {
+  content: '';
+  position: absolute;
+  inset: -40%;
+  background:
+    radial-gradient(circle at 30% 20%, color-mix(in srgb, var(--mat-sys-primary) 18%, transparent) 0%, transparent 42%),
+    radial-gradient(circle at 80% 80%, color-mix(in srgb, var(--mat-sys-tertiary) 16%, transparent) 0%, transparent 45%);
+  animation: login-orbit 22s ease-in-out infinite alternate;
+  pointer-events: none;
+  z-index: 0;
+}
+
+@keyframes login-orbit {
+  from {
+    transform: rotate(0deg) scale(1);
+  }
+  to {
+    transform: rotate(8deg) scale(1.05);
+  }
+}
+
+.login-card {
+  width: 100%;
+  max-width: 520px;
+  position: relative;
+  z-index: 1;
+  border-radius: 20px !important;
+  overflow: hidden;
+  box-shadow:
+    0 24px 48px color-mix(in srgb, var(--mat-sys-primary) 16%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--mat-sys-outline-variant) 40%, transparent) !important;
+  animation: login-card-in 0.55s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+@keyframes login-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.center {
+  display: flex;
+  justify-content: center;
+  padding: 24px 0;
+}
+
+.hint {
+  margin-bottom: 16px;
+  opacity: 0.88;
+  line-height: 1.45;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 16px;
+}
+
+.span-2 {
+  grid-column: 1 / -1;
+}
+
+.actions {
+  margin-top: 8px;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 360px;
+  margin: 0 auto;
+}
+
+.full {
+  width: 100%;
+}
+
+.submit-btn {
+  margin-top: 8px;
+  align-self: stretch;
+  border-radius: 12px !important;
+  padding: 10px 20px !important;
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 20px color-mix(in srgb, var(--mat-sys-primary) 30%, transparent);
+  }
+}
+
+@media (max-width: 560px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .span-2 {
+    grid-column: 1;
+  }
+}
