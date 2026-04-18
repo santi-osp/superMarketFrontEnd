@@ -13,3 +13,14 @@ npm run build      # salida en dist/
 ```
 
 Desde la carpeta padre también puedes usar `npm start` (delega a este proyecto).
+
+## CI
+
+Se agregó workflow de GitHub Actions en `.github/workflows`:
+
+- `ci.yml` (CI - SuperMarketFrontEnd)
+	- Se ejecuta en `push` y `pull_request` a ramas `DEV`, `QA` y `PROD`.
+	- Ejecuta instalación limpia con `npm ci`.
+	- Compila frontend en modo producción con `npm run build:prod`.
+	- Ejecuta pruebas unitarias en modo headless.
+	- Publica artefactos de cobertura y bundle (`dist/web`).
