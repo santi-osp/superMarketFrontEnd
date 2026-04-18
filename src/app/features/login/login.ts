@@ -5,18 +5,15 @@ import { Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { finalize } from 'rxjs';
 
 import { AuditContextService } from '../../core/audit-context.service';
-import { UsuarioService } from '../../core/services/usuario.service';
-import { UsuarioRead } from '../../models/api.models';
+import { AuthService } from '../../core/auth.service';
 
-/**
- * Login de demostración: solo comprueba que el nombre de usuario exista en el API.
- * La contraseña no se valida contra el backend (hasta que exista autenticación real).
- */
 @Component({
   selector: 'app-login',
   imports: [
@@ -24,6 +21,7 @@ import { UsuarioRead } from '../../models/api.models';
     MatCardModule,
     MatButtonModule,
     MatFormFieldModule,
+    MatIconModule,
     MatInputModule,
     MatProgressSpinnerModule,
     MatSnackBarModule,
@@ -33,90 +31,57 @@ import { UsuarioRead } from '../../models/api.models';
 })
 export class LoginComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
-  private readonly usuarioService = inject(UsuarioService);
+  private readonly auth = inject(AuthService);
   private readonly audit = inject(AuditContextService);
   private readonly router = inject(Router);
   private readonly snack = inject(MatSnackBar);
 
-  readonly loading = signal(true);
-  readonly usuarios = signal<UsuarioRead[]>([]);
+  readonly submitting = signal(false);
+  readonly hidePassword = signal(true);
 
   readonly loginForm = this.fb.nonNullable.group({
-    nombre_usuario: ['', Validators.required],
-    clave: ['', Validators.required],
+    username: ['', [Validators.required, Validators.maxLength(50)]],
+    password: ['', [Validators.required, Validators.maxLength(128)]],
   });
 
-  readonly firstUserForm = this.fb.nonNullable.group({
-    nombre_completo: ['', Validators.required],
-    nombre_usuario: ['', Validators.required],
-    email: ['', [Validators.required, Validators.email]],
-    clave: ['', [Validators.required, Validators.minLength(4)]],
-    rol: ['admin', Validators.required],
-    telefono: [''],
-  });
+  readonly usernameCtrl = this.loginForm.controls.username;
+  readonly passwordCtrl = this.loginForm.controls.password;
 
   ngOnInit(): void {
-    this.reload();
-  }
-
-  reload(): void {
-    this.loading.set(true);
-    this.usuarioService.list().subscribe({
-      next: (rows) => {
-        this.usuarios.set(rows);
-        this.loading.set(false);
-      },
-      error: (err: HttpErrorResponse) => {
-        this.loading.set(false);
-        this.snack.open(this.msg(err), 'Cerrar', { duration: 6000 });
-      },
-    });
+    if (this.auth.isAuthenticated()) {
+      void this.router.navigateByUrl('/app');
+    }
   }
 
   ingresar(): void {
-    if (this.loginForm.invalid) {
+    if (this.loginForm.invalid || this.submitting()) {
       this.loginForm.markAllAsTouched();
       return;
     }
-    const { nombre_usuario } = this.loginForm.getRawValue();
-    const key = nombre_usuario.trim().toLowerCase();
-    const u = this.usuarios().find(
-      (x) => x.nombre_usuario.trim().toLowerCase() === key,
-    );
-    if (!u) {
-      this.snack.open('Usuario no encontrado. Revisa el nombre o crea un usuario en la base.', 'Cerrar', {
-        duration: 5000,
-      });
-      return;
-    }
-    this.audit.select(u.id_usuario);
-    void this.router.navigateByUrl('/app');
-  }
 
-  crearPrimero(): void {
-    if (this.firstUserForm.invalid) {
-      this.firstUserForm.markAllAsTouched();
-      return;
-    }
-    const v = this.firstUserForm.getRawValue();
-    this.usuarioService
-      .create({
-        nombre_completo: v.nombre_completo,
-        nombre_usuario: v.nombre_usuario,
-        email: v.email,
-        clave: v.clave,
-        rol: v.rol,
-        telefono: v.telefono || null,
-        activo: true,
+    const form = this.loginForm.getRawValue();
+    this.submitting.set(true);
+
+    this.auth
+      .login({
+        username: form.username,
+        password: form.password,
       })
+      .pipe(finalize(() => this.submitting.set(false)))
       .subscribe({
-        next: (created) => {
-          this.usuarios.set([...this.usuarios(), created]);
-          this.audit.select(created.id_usuario);
+        next: (user) => {
+          this.audit.select(user.id);
+          this.snack.open(`Bienvenido, ${user.username}`, 'Cerrar', { duration: 2500 });
           void this.router.navigateByUrl('/app');
         },
-        error: (err: HttpErrorResponse) => this.snack.open(this.msg(err), 'Cerrar', { duration: 6000 }),
+        error: (err: HttpErrorResponse) => {
+          this.snack.open(this.msg(err), 'Cerrar', { duration: 5000 });
+        },
       });
+  }
+
+  togglePasswordVisibility(): void {
+    this.hidePassword.update((current) => !current);
   }
 
   private msg(err: HttpErrorResponse): string {

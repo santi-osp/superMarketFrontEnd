@@ -19,6 +19,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { AuditContextService } from '../../core/audit-context.service';
+import { AuthService } from '../../core/auth.service';
 import { UsuarioService } from '../../core/services/usuario.service';
 import { UsuarioRead } from '../../models/api.models';
 
@@ -45,6 +46,7 @@ const SIDEBAR_KEY = 'shell_sidebar_collapsed';
 })
 export class MainLayoutComponent implements OnInit, AfterViewInit {
   private readonly usuarioService = inject(UsuarioService);
+  private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
   private readonly snack = inject(MatSnackBar);
 
@@ -107,6 +109,7 @@ export class MainLayoutComponent implements OnInit, AfterViewInit {
 
   logout(): void {
     this.audit.clear();
+    this.auth.clearSession();
     void this.router.navigateByUrl('/login');
   }
 

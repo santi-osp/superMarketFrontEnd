@@ -1,11 +1,13 @@
 import { Routes } from '@angular/router';
 
 import { auditUserGuard } from './core/audit-user.guard';
+import { loginRedirectGuard } from './core/login-redirect.guard';
 
 export const routes: Routes = [
-  { path: '', redirectTo: 'login', pathMatch: 'full' },
+  { path: '', redirectTo: 'app', pathMatch: 'full' },
   {
     path: 'login',
+    canActivate: [loginRedirectGuard],
     loadComponent: () => import('./features/login/login').then((m) => m.LoginComponent),
   },
   {
