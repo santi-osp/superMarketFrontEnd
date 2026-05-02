@@ -1,0 +1,98 @@
+import { HttpErrorResponse } from '@angular/common/http';
+import { AfterViewInit, Component, inject, ViewChild } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
+import { MatDialog } from '@angular/material/dialog';
+import { MatIconModule } from '@angular/material/icon';
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { filter } from 'rxjs/operators';
+
+import { DetallePedidoService } from '../../core/services/detalle-pedido.service';
+import { DetallePedidoRead } from '../../models/api.models';
+import { shortId } from '../../shared/ids';
+import { DetallePedidoDialogComponent, DetallePedidoDialogData } from './detalle-pedido-dialog';
+
+@Component({
+  selector: 'app-detalle-pedido-list',
+  imports: [
+    MatTableModule,
+    MatPaginatorModule,
+    MatButtonModule,
+    MatIconModule,
+    MatProgressSpinnerModule,
+    MatSnackBarModule,
+  ],
+  templateUrl: './detalle-pedido-list.html',
+  styleUrl: './detalle-pedido-list.scss',
+})
+export class DetallePedidoListComponent implements AfterViewInit {
+  private readonly svc = inject(DetallePedidoService);
+  private readonly dialog = inject(MatDialog);
+  private readonly snack = inject(MatSnackBar);
+
+  readonly displayedColumns = ['nombre', 'id_pedido', 'id_producto', 'estado', 'acciones'];
+  readonly dataSource = new MatTableDataSource<DetallePedidoRead>([]);
+  loading = true;
+
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+
+  ngAfterViewInit(): void {
+    this.dataSource.paginator = this.paginator;
+  }
+
+  constructor() {
+    this.reload();
+  }
+
+  shortId = shortId;
+
+  reload(): void {
+    this.loading = true;
+    this.svc.list().subscribe({
+      next: (rows) => {
+        this.dataSource.data = rows;
+        this.loading = false;
+      },
+      error: (err: HttpErrorResponse) => {
+        this.loading = false;
+        this.snack.open(this.msg(err), 'Cerrar', { duration: 6000 });
+      },
+    });
+  }
+
+  nuevo(): void {
+    this.open({ mode: 'create' });
+  }
+
+  editar(row: DetallePedidoRead): void {
+    this.open({ mode: 'edit', row });
+  }
+
+  private open(data: DetallePedidoDialogData): void {
+    this.dialog
+      .open(DetallePedidoDialogComponent, { width: '560px', data })
+      .afterClosed()
+      .pipe(filter(Boolean))
+      .subscribe(() => this.reload());
+  }
+
+  eliminar(row: DetallePedidoRead): void {
+    if (!confirm(`¿Eliminar detalle ${row.nombre}?`)) return;
+    this.svc.delete(row.id_detalle_pedido).subscribe({
+      next: () => {
+        this.snack.open('Detalle eliminado', 'OK', { duration: 3000 });
+        this.reload();
+      },
+      error: (err: HttpErrorResponse) => this.snack.open(this.msg(err), 'Cerrar', { duration: 6000 }),
+    });
+  }
+
+  private msg(err: HttpErrorResponse): string {
+    const d = err.error?.detail;
+    if (typeof d === 'string') return d;
+    if (Array.isArray(d)) return d.map((x) => x.msg ?? JSON.stringify(x)).join('; ');
+    return err.message;
+  }
+}
