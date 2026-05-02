@@ -1,0 +1,34 @@
+.page-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.head-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.loading {
+  display: grid;
+  place-items: center;
+  min-height: 220px;
+}
+
+.table-wrap {
+  overflow: auto;
+  border-radius: 8px;
+}
+
+table {
+  width: 100%;
+}
+
+.actions {
+  white-space: nowrap;
+}
+
+
+
