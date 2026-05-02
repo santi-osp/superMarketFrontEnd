@@ -13,25 +13,17 @@
 } @else {
   <div class="table-wrap mat-elevation-z2">
     <table mat-table [dataSource]="dataSource">
-      <ng-container matColumnDef="nombre_usuario">
+      <ng-container matColumnDef="username">
         <th mat-header-cell *matHeaderCellDef>Usuario</th>
-        <td mat-cell *matCellDef="let r">{{ r.nombre_usuario }}</td>
+        <td mat-cell *matCellDef="let r">{{ r.username }}</td>
       </ng-container>
-      <ng-container matColumnDef="nombre_completo">
-        <th mat-header-cell *matHeaderCellDef>Nombre</th>
-        <td mat-cell *matCellDef="let r">{{ r.nombre_completo }}</td>
-      </ng-container>
-      <ng-container matColumnDef="email">
-        <th mat-header-cell *matHeaderCellDef>Email</th>
-        <td mat-cell *matCellDef="let r">{{ r.email }}</td>
-      </ng-container>
-      <ng-container matColumnDef="rol">
+      <ng-container matColumnDef="id_rol">
         <th mat-header-cell *matHeaderCellDef>Rol</th>
-        <td mat-cell *matCellDef="let r">{{ r.rol }}</td>
+        <td mat-cell *matCellDef="let r">{{ shortId(r.id_rol) }}</td>
       </ng-container>
-      <ng-container matColumnDef="activo">
+      <ng-container matColumnDef="estado">
         <th mat-header-cell *matHeaderCellDef>Activo</th>
-        <td mat-cell *matCellDef="let r">{{ r.activo ? 'Sí' : 'No' }}</td>
+        <td mat-cell *matCellDef="let r">{{ yesNo(r.estado) }}</td>
       </ng-container>
       <ng-container matColumnDef="acciones">
         <th mat-header-cell *matHeaderCellDef></th>
