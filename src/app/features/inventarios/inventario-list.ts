@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { AfterViewInit, Component, inject, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ViewChild, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
@@ -9,13 +9,14 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { filter } from 'rxjs/operators';
 
-import { ProductoService } from '../../core/services/producto.service';
-import { ProductoRead } from '../../models/api.models';
+import { InventarioService } from '../../core/services/inventario.service';
+import { InventarioRead } from '../../models/api.models';
 import { httpErrorMessage } from '../../shared/http-error';
-import { money, shortId, yesNo } from '../../shared/ids';
-import { ProductoDialogComponent, ProductoDialogData } from './producto-dialog';
+import { shortId, yesNo } from '../../shared/ids';
+import { InventarioDialogComponent, InventarioDialogData } from './inventario-dialog';
+
 @Component({
-  selector: 'app-producto-list',
+  selector: 'app-inventario-list',
   imports: [
     MatTableModule,
     MatPaginatorModule,
@@ -25,34 +26,39 @@ import { ProductoDialogComponent, ProductoDialogData } from './producto-dialog';
     MatProgressSpinnerModule,
     MatSnackBarModule,
   ],
-  templateUrl: './producto-list.html',
-  styleUrl: './producto-list.scss',
+  templateUrl: './inventario-list.html',
+  styleUrl: './inventario-list.scss',
 })
-export class ProductoListComponent implements AfterViewInit {
-  private readonly svc = inject(ProductoService);
+export class InventarioListComponent implements AfterViewInit {
+  private readonly svc = inject(InventarioService);
   private readonly dialog = inject(MatDialog);
   private readonly snack = inject(MatSnackBar);
+
   readonly displayedColumns = [
-    'nombre',
-    'codigo_barras',
-    'precio_venta',
-    'id_tipo',
-    'id_proveedor',
+    'id_producto',
+    'id_sucursal',
+    'stock_actual',
+    'stock_minimo',
+    'ubicacion',
     'estado',
     'acciones',
   ];
-  readonly dataSource = new MatTableDataSource<ProductoRead>([]);
+  readonly dataSource = new MatTableDataSource<InventarioRead>([]);
   loading = true;
+
   @ViewChild(MatPaginator) paginator!: MatPaginator;
+
   constructor() {
     this.reload();
   }
+
   ngAfterViewInit(): void {
     this.dataSource.paginator = this.paginator;
   }
+
   shortId = shortId;
-  money = money;
   yesNo = yesNo;
+
   reload(): void {
     this.loading = true;
     this.svc.list().subscribe({
@@ -60,34 +66,38 @@ export class ProductoListComponent implements AfterViewInit {
         this.dataSource.data = rows;
         this.loading = false;
       },
-      error: (err: HttpErrorResponse) => {
+      error: (e: HttpErrorResponse) => {
         this.loading = false;
-        this.snack.open(httpErrorMessage(err), 'Cerrar', { duration: 6000 });
+        this.snack.open(httpErrorMessage(e), 'Cerrar', { duration: 6000 });
       },
     });
   }
+
   nuevo(): void {
     this.open({ mode: 'create' });
   }
-  editar(row: ProductoRead): void {
+
+  editar(row: InventarioRead): void {
     this.open({ mode: 'edit', row });
   }
-  eliminar(row: ProductoRead): void {
-    if (!confirm(`?Eliminar producto ${row.nombre}?`)) return;
+
+  eliminar(row: InventarioRead): void {
+    if (!confirm(`¿Eliminar inventario de producto ${shortId(row.id_producto)}?`)) return;
     this.svc.delete(row.id).subscribe({
       next: () => {
-        this.snack.open('Producto eliminado', 'OK', { duration: 3000 });
+        this.snack.open('Inventario eliminado', 'OK', { duration: 3000 });
         this.reload();
       },
-      error: (err: HttpErrorResponse) =>
-        this.snack.open(httpErrorMessage(err), 'Cerrar', { duration: 6000 }),
+      error: (e: HttpErrorResponse) =>
+        this.snack.open(httpErrorMessage(e), 'Cerrar', { duration: 6000 }),
     });
   }
-  private open(data: ProductoDialogData): void {
+
+  private open(data: InventarioDialogData): void {
     this.dialog
-      .open(ProductoDialogComponent, { width: '640px', data })
+      .open(InventarioDialogComponent, { width: '760px', data })
       .afterClosed()
-      .pipe(filter(Boolean))
+      .pipe(filter((saved): saved is boolean => saved === true))
       .subscribe(() => this.reload());
   }
 }
