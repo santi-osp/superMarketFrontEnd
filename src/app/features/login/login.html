@@ -1,0 +1,58 @@
+<div class="login-page">
+  <mat-card class="login-card" appearance="outlined">
+    <mat-card-header>
+      <mat-card-title>Iniciar sesión</mat-card-title>
+      <mat-card-subtitle>
+        Usa las credenciales reales de tu backend para obtener sesión JWT.
+      </mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <form [formGroup]="loginForm" (ngSubmit)="ingresar()" class="login-form" novalidate>
+        <mat-form-field appearance="outline" class="full">
+          <mat-label>Usuario</mat-label>
+          <input matInput formControlName="username" autocomplete="username" />
+          @if (usernameCtrl.touched && usernameCtrl.hasError('required')) {
+            <mat-error>El usuario es obligatorio.</mat-error>
+          }
+          @if (usernameCtrl.touched && usernameCtrl.hasError('maxlength')) {
+            <mat-error>El usuario no puede superar 50 caracteres.</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full">
+          <mat-label>Contraseña</mat-label>
+          <input
+            matInput
+            [type]="hidePassword() ? 'password' : 'text'"
+            formControlName="password"
+            autocomplete="current-password"
+          />
+          <button
+            mat-icon-button
+            matSuffix
+            type="button"
+            (click)="togglePasswordVisibility()"
+            [attr.aria-label]="hidePassword() ? 'Mostrar contraseña' : 'Ocultar contraseña'"
+          >
+            <mat-icon>{{ hidePassword() ? 'visibility' : 'visibility_off' }}</mat-icon>
+          </button>
+          @if (passwordCtrl.touched && passwordCtrl.hasError('required')) {
+            <mat-error>La contraseña es obligatoria.</mat-error>
+          }
+          @if (passwordCtrl.touched && passwordCtrl.hasError('maxlength')) {
+            <mat-error>La contraseña supera el tamaño permitido.</mat-error>
+          }
+        </mat-form-field>
+
+        <button mat-flat-button color="primary" type="submit" class="submit-btn" [disabled]="submitting()">
+          @if (submitting()) {
+            <mat-spinner diameter="18" />
+            <span>Validando...</span>
+          } @else {
+            <span>Ingresar</span>
+          }
+        </button>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>
