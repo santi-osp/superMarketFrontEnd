@@ -1,0 +1,52 @@
+<div class="page-head">
+  <h1>Pagos</h1>
+  <button mat-flat-button color="primary" type="button" (click)="nuevo()">
+    <mat-icon>add</mat-icon>
+    Nuevo
+  </button>
+</div>
+
+@if (loading) {
+  <div class="loading">
+    <mat-spinner />
+  </div>
+} @else {
+  <div class="table-wrap mat-elevation-z2">
+    <table mat-table [dataSource]="dataSource">
+      <ng-container matColumnDef="nombre">
+        <th mat-header-cell *matHeaderCellDef>Nombre</th>
+        <td mat-cell *matCellDef="let r">{{ r.nombre }}</td>
+      </ng-container>
+      <ng-container matColumnDef="id_pedido">
+        <th mat-header-cell *matHeaderCellDef>Pedido</th>
+        <td mat-cell *matCellDef="let r">{{ shortId(r.id_pedido) }}</td>
+      </ng-container>
+      <ng-container matColumnDef="referencia">
+        <th mat-header-cell *matHeaderCellDef>Referencia</th>
+        <td mat-cell *matCellDef="let r">{{ r.referencia }}</td>
+      </ng-container>
+      <ng-container matColumnDef="tipo_pago">
+        <th mat-header-cell *matHeaderCellDef>Tipo</th>
+        <td mat-cell *matCellDef="let r">{{ r.tipo_pago }}</td>
+      </ng-container>
+      <ng-container matColumnDef="estado">
+        <th mat-header-cell *matHeaderCellDef>Estado</th>
+        <td mat-cell *matCellDef="let r">{{ r.estado || '—' }}</td>
+      </ng-container>
+      <ng-container matColumnDef="acciones">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let r" class="actions">
+          <button mat-icon-button type="button" (click)="editar(r)" aria-label="Editar">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button type="button" (click)="eliminar(r)" aria-label="Eliminar">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    </table>
+    <mat-paginator [pageSizeOptions]="[5, 10, 25]" showFirstLastButtons />
+  </div>
+}

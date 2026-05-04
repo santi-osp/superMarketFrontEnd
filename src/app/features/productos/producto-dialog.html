@@ -1,0 +1,25 @@
+<h2 mat-dialog-title>{{ data.mode === 'create' ? 'Nuevo producto' : 'Editar producto' }}</h2>
+<mat-dialog-content class="dialog-body">
+  <form [formGroup]="form" class="grid">
+    <mat-form-field appearance="outline" class="span-2">
+      <mat-label>Categoría</mat-label>
+      <mat-select formControlName="id_categoria">
+        @for (c of categorias(); track c.id_categoria) {
+          <mat-option [value]="c.id_categoria">{{ c.nombre }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="span-2">
+      <mat-label>Nombre</mat-label>
+      <input matInput formControlName="nombre" />
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="span-2">
+      <mat-label>Descripción</mat-label>
+      <textarea matInput rows="3" formControlName="descripcion"></textarea>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button type="button" (click)="cancel()">Cancelar</button>
+  <button mat-flat-button color="primary" type="button" (click)="save()">Guardar</button>
+</mat-dialog-actions>

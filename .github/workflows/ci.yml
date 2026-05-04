@@ -1,0 +1,57 @@
+name: CI - SuperMarketFrontEnd
+
+on:
+  push:
+    branches: [DEV, QA, PROD]
+  pull_request:
+    branches: [DEV, QA, PROD]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality-build-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      CI: true
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build (production)
+        run: npm run build:prod
+
+      - name: Run unit tests (headless)
+        run: npm run test -- --watch=false --browsers=ChromeHeadless --code-coverage --progress=false
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage
+          if-no-files-found: ignore
+
+      - name: Upload production bundle
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-dist
+          path: dist/web
+          if-no-files-found: error

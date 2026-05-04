@@ -1,0 +1,28 @@
+.page-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.page-head h1 {
+  margin: 0;
+  font: var(--mat-sys-title-large);
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  padding: 48px;
+}
+
+.table-wrap {
+  overflow: auto;
+  border-radius: 12px;
+}
+
+.actions {
+  white-space: nowrap;
+  text-align: right;
+}
