@@ -1,0 +1,98 @@
+<h2 mat-dialog-title>Detalle de factura</h2>
+
+<mat-dialog-content class="detail-body">
+  @if (loading() && !factura()) {
+    <div class="state-panel compact">
+      <mat-spinner diameter="36" />
+      <p>Cargando factura...</p>
+    </div>
+  } @else if (error()) {
+    <div class="state-panel compact">
+      <mat-icon>error</mat-icon>
+      <h3>No se pudo cargar la factura</h3>
+      <p>{{ error() }}</p>
+      <button mat-stroked-button type="button" (click)="load()">
+        <mat-icon>refresh</mat-icon>
+        Reintentar
+      </button>
+    </div>
+  } @else if (factura(); as f) {
+    <section class="detail-summary">
+      <div>
+        <span class="label">Factura</span>
+        <strong class="id-pill">{{ shortId(f.id) }}</strong>
+      </div>
+      <div>
+        <span class="label">Estado</span>
+        <span class="status-chip" [class.anulada]="estadoClass(f) === 'anulada'">
+          {{ f.estado || 'Sin estado' }}
+        </span>
+      </div>
+      <div>
+        <span class="label">Fecha</span>
+        <strong>{{ formatDate(f.fecha) }}</strong>
+      </div>
+      <div>
+        <span class="label">Total</span>
+        <strong class="total">{{ money(f.total) }}</strong>
+      </div>
+      <div>
+        <span class="label">Metodo de pago</span>
+        <strong>{{ f.metodo_pago || 'Sin dato' }}</strong>
+      </div>
+    </section>
+
+    <section class="entity-grid">
+      <div>
+        <span class="label">Cliente</span>
+        <span class="id-pill">{{ shortId(f.id_cliente) }}</span>
+      </div>
+      <div>
+        <span class="label">Empleado</span>
+        <span class="id-pill">{{ shortId(f.id_empleado) }}</span>
+      </div>
+      <div>
+        <span class="label">Sucursal</span>
+        <span class="id-pill">{{ shortId(f.id_sucursal) }}</span>
+      </div>
+    </section>
+
+    <section class="line-items">
+      <div class="section-head">
+        <h3>Items</h3>
+        <span>{{ f.detalles.length }} registros</span>
+      </div>
+
+      @if (f.detalles.length === 0) {
+        <div class="state-panel compact">
+          <mat-icon>receipt_long</mat-icon>
+          <p>Esta factura no tiene items asociados.</p>
+        </div>
+      } @else {
+        <div class="detail-table">
+          <div class="detail-row head">
+            <span>Producto</span>
+            <span>Cant.</span>
+            <span>Unitario</span>
+            <span>Subtotal</span>
+          </div>
+          @for (d of f.detalles; track d.id) {
+            <div class="detail-row">
+              <span class="product-cell">
+                <strong>{{ productName(d.id_producto) }}</strong>
+                <small>{{ shortId(d.id_producto) }}</small>
+              </span>
+              <span>{{ d.cantidad }}</span>
+              <span>{{ money(d.precio_unitario) }}</span>
+              <span>{{ money(d.subtotal) }}</span>
+            </div>
+          }
+        </div>
+      }
+    </section>
+  }
+</mat-dialog-content>
+
+<mat-dialog-actions align="end" class="dialog-actions">
+  <button mat-flat-button color="primary" mat-dialog-close>Cerrar</button>
+</mat-dialog-actions>
