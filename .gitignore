@@ -53,6 +53,7 @@ __screenshots__/
 .cache/
 tmp/
 temp/
+*.log
 
 # System files
 .DS_Store
