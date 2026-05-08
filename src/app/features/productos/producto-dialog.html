@@ -1,25 +1,41 @@
 <h2 mat-dialog-title>{{ data.mode === 'create' ? 'Nuevo producto' : 'Editar producto' }}</h2>
-<mat-dialog-content class="dialog-body">
-  <form [formGroup]="form" class="grid">
-    <mat-form-field appearance="outline" class="span-2">
-      <mat-label>Categoría</mat-label>
-      <mat-select formControlName="id_categoria">
-        @for (c of categorias(); track c.id_categoria) {
-          <mat-option [value]="c.id_categoria">{{ c.nombre }}</mat-option>
+<mat-dialog-content class="dialog-body"
+  ><form [formGroup]="form" class="grid">
+    <mat-form-field appearance="outline"
+      ><mat-label>Nombre</mat-label><input matInput formControlName="nombre"
+    /></mat-form-field>
+    <mat-form-field appearance="outline"
+      ><mat-label>Código de barras</mat-label><input matInput formControlName="codigo_barras"
+    /></mat-form-field>
+    <mat-form-field appearance="outline"
+      ><mat-label>Precio venta</mat-label
+      ><input matInput type="number" formControlName="precio_venta"
+    /></mat-form-field>
+    <mat-form-field appearance="outline"
+      ><mat-label>Vencimiento</mat-label
+      ><input matInput type="date" formControlName="fecha_vencimiento"
+    /></mat-form-field>
+    <mat-form-field appearance="outline"
+      ><mat-label>Tipo</mat-label
+      ><mat-select formControlName="id_tipo"
+        ><mat-option value="">Sin tipo</mat-option>
+        @for (t of tipos(); track t.id) {
+          <mat-option [value]="t.id">{{ t.nombre }}</mat-option>
         }
-      </mat-select>
-    </mat-form-field>
-    <mat-form-field appearance="outline" class="span-2">
-      <mat-label>Nombre</mat-label>
-      <input matInput formControlName="nombre" />
-    </mat-form-field>
-    <mat-form-field appearance="outline" class="span-2">
-      <mat-label>Descripción</mat-label>
-      <textarea matInput rows="3" formControlName="descripcion"></textarea>
-    </mat-form-field>
-  </form>
-</mat-dialog-content>
-<mat-dialog-actions align="end">
-  <button mat-button type="button" (click)="cancel()">Cancelar</button>
-  <button mat-flat-button color="primary" type="button" (click)="save()">Guardar</button>
-</mat-dialog-actions>
+      </mat-select></mat-form-field
+    >
+    <mat-form-field appearance="outline"
+      ><mat-label>Proveedor</mat-label
+      ><mat-select formControlName="id_proveedor"
+        ><mat-option value="">Sin proveedor</mat-option>
+        @for (p of proveedores(); track p.id) {
+          <mat-option [value]="p.id">{{ p.nombre }}</mat-option>
+        }
+      </mat-select></mat-form-field
+    >
+    <mat-checkbox formControlName="estado" class="span-2">Activo</mat-checkbox>
+  </form></mat-dialog-content
+><mat-dialog-actions align="end"
+  ><button mat-button (click)="cancel()">Cancelar</button
+  ><button mat-flat-button color="primary" (click)="save()">Guardar</button></mat-dialog-actions
+>

@@ -1,15 +1,18 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
+import { RolService } from '../../core/services/rol.service';
 import { UsuarioService } from '../../core/services/usuario.service';
-import { UsuarioRead, UsuarioUpdate } from '../../models/api.models';
+import { RolRead, UsuarioRead, UsuarioUpdate } from '../../models/api.models';
+import { httpErrorMessage } from '../../shared/http-error';
 
 export interface UsuarioDialogData {
   mode: 'create' | 'edit';
@@ -24,44 +27,48 @@ export interface UsuarioDialogData {
     MatButtonModule,
     MatFormFieldModule,
     MatInputModule,
+    MatSelectModule,
     MatCheckboxModule,
     MatSnackBarModule,
   ],
   templateUrl: './usuario-dialog.html',
 })
-export class UsuarioDialogComponent {
+export class UsuarioDialogComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly usuarioService = inject(UsuarioService);
+  private readonly rolService = inject(RolService);
   private readonly dialogRef = inject(MatDialogRef<UsuarioDialogComponent, boolean>);
   private readonly snack = inject(MatSnackBar);
 
   readonly data = inject<UsuarioDialogData>(MAT_DIALOG_DATA);
+  readonly roles = signal<RolRead[]>([]);
 
   readonly form = this.fb.nonNullable.group({
-    nombre_completo: ['', Validators.required],
-    nombre_usuario: ['', Validators.required],
-    email: ['', [Validators.required, Validators.email]],
-    clave: [''],
-    rol: ['', Validators.required],
-    telefono: [''],
-    activo: [true],
+    username: ['', Validators.required],
+    password: [''],
+    id_rol: ['', Validators.required],
+    estado: [true],
   });
 
-  constructor() {
+  ngOnInit(): void {
+    this.rolService.list().subscribe({
+      next: (rows) => this.roles.set(rows.filter((rol) => rol.activo)),
+      error: (err: HttpErrorResponse) => this.snack.open(httpErrorMessage(err), 'Cerrar', { duration: 6000 }),
+    });
+
     if (this.data.mode === 'edit' && this.data.row) {
       const r = this.data.row;
       this.form.patchValue({
-        nombre_completo: r.nombre_completo,
-        nombre_usuario: r.nombre_usuario,
-        email: r.email,
-        clave: '',
-        rol: r.rol,
-        telefono: r.telefono ?? '',
-        activo: r.activo,
+        username: r.username,
+        password: '',
+        id_rol: r.id_rol,
+        estado: r.estado,
       });
     }
+
     if (this.data.mode === 'create') {
-      this.form.controls.clave.setValidators([Validators.required, Validators.minLength(4)]);
+      this.form.controls.password.setValidators([Validators.required, Validators.minLength(6)]);
+      this.form.controls.password.updateValueAndValidity();
     }
   }
 
@@ -74,46 +81,35 @@ export class UsuarioDialogComponent {
       this.form.markAllAsTouched();
       return;
     }
-    const v = this.form.getRawValue();
+
+    const value = this.form.getRawValue();
     if (this.data.mode === 'create') {
       this.usuarioService
         .create({
-          nombre_completo: v.nombre_completo,
-          nombre_usuario: v.nombre_usuario,
-          email: v.email,
-          clave: v.clave,
-          rol: v.rol,
-          telefono: v.telefono || null,
-          activo: v.activo,
+          username: value.username,
+          password: value.password,
+          id_rol: value.id_rol,
+          estado: value.estado,
         })
         .subscribe({
           next: () => this.dialogRef.close(true),
-          error: (err: HttpErrorResponse) => this.snack.open(this.msg(err), 'Cerrar', { duration: 6000 }),
+          error: (err: HttpErrorResponse) => this.snack.open(httpErrorMessage(err), 'Cerrar', { duration: 6000 }),
         });
       return;
     }
-    const id = this.data.row!.id_usuario;
-    const body: UsuarioUpdate = {
-      nombre_completo: v.nombre_completo,
-      nombre_usuario: v.nombre_usuario,
-      email: v.email,
-      rol: v.rol,
-      telefono: v.telefono || null,
-      activo: v.activo,
-    };
-    if (v.clave?.trim()) {
-      body.clave = v.clave;
-    }
-    this.usuarioService.update(id, body).subscribe({
-      next: () => this.dialogRef.close(true),
-      error: (err: HttpErrorResponse) => this.snack.open(this.msg(err), 'Cerrar', { duration: 6000 }),
-    });
-  }
 
-  private msg(err: HttpErrorResponse): string {
-    const d = err.error?.detail;
-    if (typeof d === 'string') return d;
-    if (Array.isArray(d)) return d.map((x) => x.msg ?? JSON.stringify(x)).join('; ');
-    return err.message;
+    const body: UsuarioUpdate = {
+      username: value.username,
+      id_rol: value.id_rol,
+      estado: value.estado,
+    };
+    if (value.password.trim()) {
+      body.password = value.password;
+    }
+
+    this.usuarioService.update(this.data.row!.id, body).subscribe({
+      next: () => this.dialogRef.close(true),
+      error: (err: HttpErrorResponse) => this.snack.open(httpErrorMessage(err), 'Cerrar', { duration: 6000 }),
+    });
   }
 }

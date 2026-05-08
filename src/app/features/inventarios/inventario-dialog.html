@@ -1,0 +1,45 @@
+<h2 mat-dialog-title>{{ data.mode === 'create' ? 'Nuevo inventario' : 'Editar inventario' }}</h2>
+
+<mat-dialog-content class="dialog-body">
+  <form [formGroup]="form" class="grid">
+    <mat-form-field appearance="outline" class="span-2">
+      <mat-label>Producto</mat-label>
+      <mat-select formControlName="id_producto">
+        @for (p of productos(); track p.id) {
+          <mat-option [value]="p.id">{{ p.nombre }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="span-2">
+      <mat-label>Sucursal</mat-label>
+      <mat-select formControlName="id_sucursal">
+        @for (s of sucursales(); track s.id) {
+          <mat-option [value]="s.id">{{ s.nombre }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Stock actual</mat-label>
+      <input matInput type="number" min="0" formControlName="stock_actual" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Stock mínimo</mat-label>
+      <input matInput type="number" min="0" formControlName="stock_minimo" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="span-2">
+      <mat-label>Ubicación</mat-label>
+      <input matInput formControlName="ubicacion" />
+    </mat-form-field>
+
+    <mat-checkbox formControlName="estado" class="span-2">Activo</mat-checkbox>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="cancel()">Cancelar</button>
+  <button mat-flat-button color="primary" (click)="save()">Guardar</button>
+</mat-dialog-actions>
