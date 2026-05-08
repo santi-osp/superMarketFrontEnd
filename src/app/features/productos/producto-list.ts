@@ -13,6 +13,7 @@ import { ProductoService } from '../../core/services/producto.service';
 import { ProductoRead } from '../../models/api.models';
 import { httpErrorMessage } from '../../shared/http-error';
 import { money, shortId, yesNo } from '../../shared/ids';
+import { setPagedData } from '../../shared/table-utils';
 import { ProductoDialogComponent, ProductoDialogData } from './producto-dialog';
 @Component({
   selector: 'app-producto-list',
@@ -57,7 +58,7 @@ export class ProductoListComponent implements AfterViewInit {
     this.loading = true;
     this.svc.list().subscribe({
       next: (rows) => {
-        this.dataSource.data = rows;
+        setPagedData(this.dataSource, rows, this.paginator);
         this.loading = false;
       },
       error: (err: HttpErrorResponse) => {
@@ -73,7 +74,7 @@ export class ProductoListComponent implements AfterViewInit {
     this.open({ mode: 'edit', row });
   }
   eliminar(row: ProductoRead): void {
-    if (!confirm(`?Eliminar producto ${row.nombre}?`)) return;
+    if (!confirm(`Eliminar producto ${row.nombre}?`)) return;
     this.svc.delete(row.id).subscribe({
       next: () => {
         this.snack.open('Producto eliminado', 'OK', { duration: 3000 });
@@ -85,7 +86,12 @@ export class ProductoListComponent implements AfterViewInit {
   }
   private open(data: ProductoDialogData): void {
     this.dialog
-      .open(ProductoDialogComponent, { width: '640px', data })
+      .open(ProductoDialogComponent, {
+        width: '1040px',
+        maxWidth: '96vw',
+        maxHeight: 'calc(100dvh - 32px)',
+        data,
+      })
       .afterClosed()
       .pipe(filter(Boolean))
       .subscribe(() => this.reload());
