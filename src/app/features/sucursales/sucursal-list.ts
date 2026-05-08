@@ -13,6 +13,7 @@ import { SucursalService } from '../../core/services/sucursal.service';
 import { SucursalRead } from '../../models/api.models';
 import { httpErrorMessage } from '../../shared/http-error';
 import { yesNo } from '../../shared/ids';
+import { setPagedData } from '../../shared/table-utils';
 import { SucursalDialogComponent, SucursalDialogData } from './sucursal-dialog';
 
 @Component({
@@ -54,7 +55,7 @@ export class SucursalListComponent implements AfterViewInit {
     this.loading = true;
     this.svc.list().subscribe({
       next: (rows) => {
-        this.dataSource.data = rows;
+        setPagedData(this.dataSource, rows, this.paginator);
         this.loading = false;
       },
       error: (err: HttpErrorResponse) => {
@@ -86,7 +87,12 @@ export class SucursalListComponent implements AfterViewInit {
 
   private open(data: SucursalDialogData): void {
     this.dialog
-      .open(SucursalDialogComponent, { width: '620px', data })
+      .open(SucursalDialogComponent, {
+        width: '860px',
+        maxWidth: '96vw',
+        maxHeight: 'calc(100dvh - 32px)',
+        data,
+      })
       .afterClosed()
       .pipe(filter((saved): saved is boolean => saved === true))
       .subscribe(() => this.reload());

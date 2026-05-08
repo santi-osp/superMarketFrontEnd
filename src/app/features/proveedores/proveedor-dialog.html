@@ -1,24 +1,52 @@
 <h2 mat-dialog-title>{{ data.mode === 'create' ? 'Nuevo proveedor' : 'Editar proveedor' }}</h2>
-<mat-dialog-content class="dialog-body"
-  ><form [formGroup]="form" class="grid">
-    <mat-form-field appearance="outline"
-      ><mat-label>Nombre</mat-label
-      ><input matInput type="text" formControlName="nombre" /></mat-form-field
-    ><mat-form-field appearance="outline"
-      ><mat-label>NIT</mat-label
-      ><input matInput type="text" formControlName="nit" /></mat-form-field
-    ><mat-form-field appearance="outline"
-      ><mat-label>Correo</mat-label
-      ><input matInput type="email" formControlName="correo" /></mat-form-field
-    ><mat-form-field appearance="outline"
-      ><mat-label>Teléfono</mat-label
-      ><input matInput type="text" formControlName="telefono" /></mat-form-field
-    ><mat-form-field appearance="outline" class="span-2"
-      ><mat-label>Dirección</mat-label
-      ><textarea matInput formControlName="direccion"></textarea></mat-form-field
-    ><mat-checkbox formControlName="estado" class="span-2">Activo</mat-checkbox>
-  </form></mat-dialog-content
-><mat-dialog-actions align="end"
-  ><button mat-button (click)="cancel()">Cancelar</button
-  ><button mat-flat-button color="primary" (click)="save()">Guardar</button></mat-dialog-actions
->
+
+<mat-dialog-content class="dialog-body">
+  <form [formGroup]="form" class="grid">
+    @if (apiError()) {
+      <div class="dialog-error">{{ apiError() }}</div>
+    }
+
+    <mat-form-field appearance="outline">
+      <mat-label>Nombre</mat-label>
+      <input matInput type="text" formControlName="nombre" autocomplete="organization" />
+      @if (form.controls.nombre.touched && form.controls.nombre.hasError('required')) {
+        <mat-error>El nombre es obligatorio.</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>NIT</mat-label>
+      <input matInput type="text" formControlName="nit" autocomplete="off" />
+      @if (form.controls.nit.touched && form.controls.nit.hasError('required')) {
+        <mat-error>El NIT es obligatorio.</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Correo</mat-label>
+      <input matInput type="email" formControlName="correo" autocomplete="email" />
+      @if (form.controls.correo.touched && form.controls.correo.hasError('email')) {
+        <mat-error>Ingresa un correo valido.</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Telefono</mat-label>
+      <input matInput type="text" formControlName="telefono" autocomplete="tel" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="span-2">
+      <mat-label>Direccion</mat-label>
+      <textarea matInput formControlName="direccion" autocomplete="street-address"></textarea>
+    </mat-form-field>
+
+    <mat-checkbox formControlName="estado" class="span-2">Activo</mat-checkbox>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end" class="dialog-actions">
+  <button mat-button type="button" (click)="cancel()" [disabled]="saving()">Cancelar</button>
+  <button mat-flat-button color="primary" type="button" (click)="save()" [disabled]="saving()">
+    {{ saving() ? 'Guardando...' : 'Guardar' }}
+  </button>
+</mat-dialog-actions>
