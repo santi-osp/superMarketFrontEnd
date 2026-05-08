@@ -13,6 +13,7 @@ import { ProveedorService } from '../../core/services/proveedor.service';
 import { ProveedorRead } from '../../models/api.models';
 import { httpErrorMessage } from '../../shared/http-error';
 import { yesNo } from '../../shared/ids';
+import { setPagedData } from '../../shared/table-utils';
 import { ProveedorDialogComponent, ProveedorDialogData } from './proveedor-dialog';
 @Component({
   selector: 'app-proveedor-list',
@@ -55,7 +56,7 @@ export class ProveedorListComponent implements AfterViewInit {
     this.loading = true;
     this.svc.list().subscribe({
       next: (rows) => {
-        this.dataSource.data = rows;
+        setPagedData(this.dataSource, rows, this.paginator);
         this.loading = false;
       },
       error: (err: HttpErrorResponse) => {
@@ -83,7 +84,12 @@ export class ProveedorListComponent implements AfterViewInit {
   }
   private open(data: ProveedorDialogData): void {
     this.dialog
-      .open(ProveedorDialogComponent, { width: '620px', data })
+      .open(ProveedorDialogComponent, {
+        width: '860px',
+        maxWidth: '96vw',
+        maxHeight: 'calc(100dvh - 32px)',
+        data,
+      })
       .afterClosed()
       .pipe(filter(Boolean))
       .subscribe(() => this.reload());

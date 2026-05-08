@@ -42,6 +42,8 @@ export class EmpleadoDialogComponent implements OnInit {
 
   readonly data = inject<EmpleadoDialogData>(MAT_DIALOG_DATA);
   readonly roles = signal<RolRead[]>([]);
+  readonly saving = signal(false);
+  readonly apiError = signal<string | null>(null);
 
   readonly form = this.fb.nonNullable.group({
     nombre: ['', Validators.required],
@@ -97,6 +99,8 @@ export class EmpleadoDialogComponent implements OnInit {
       return;
     }
 
+    this.saving.set(true);
+    this.apiError.set(null);
     const v = this.form.getRawValue();
     const body: any = {
       nombre: v.nombre,
@@ -122,8 +126,12 @@ export class EmpleadoDialogComponent implements OnInit {
 
     req.subscribe({
       next: () => this.ref.close(true),
-      error: (e: HttpErrorResponse) =>
-        this.snack.open(httpErrorMessage(e), 'Cerrar', { duration: 6000 }),
+      error: (e: HttpErrorResponse) => {
+        const msg = httpErrorMessage(e);
+        this.apiError.set(msg);
+        this.saving.set(false);
+        this.snack.open(msg, 'Cerrar', { duration: 6000 });
+      },
     });
   }
 }

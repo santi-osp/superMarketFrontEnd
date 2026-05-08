@@ -1,11 +1,11 @@
 <div class="page-head">
   <h1>Compras a proveedor</h1>
   <div class="head-actions">
-    <button mat-flat-button color="primary" (click)="nuevo()">
+    <button mat-flat-button color="primary" class="action-create" (click)="nuevo()">
       <mat-icon>add</mat-icon>
       Nueva
     </button>
-    <button mat-stroked-button (click)="reload()">
+    <button mat-stroked-button class="action-refresh" (click)="reload()">
       <mat-icon>refresh</mat-icon>
       Recargar
     </button>
@@ -21,7 +21,7 @@
     <table mat-table [dataSource]="dataSource">
       <ng-container matColumnDef="id">
         <th mat-header-cell *matHeaderCellDef>ID</th>
-        <td mat-cell *matCellDef="let r">{{ shortId(r.id) }}</td>
+        <td mat-cell *matCellDef="let r"><span class="id-pill">{{ shortId(r.id) }}</span></td>
       </ng-container>
 
       <ng-container matColumnDef="fecha">
@@ -31,17 +31,17 @@
 
       <ng-container matColumnDef="id_proveedor">
         <th mat-header-cell *matHeaderCellDef>Proveedor</th>
-        <td mat-cell *matCellDef="let r">{{ shortId(r.id_proveedor) }}</td>
+        <td mat-cell *matCellDef="let r"><span class="id-pill">{{ shortId(r.id_proveedor) }}</span></td>
       </ng-container>
 
       <ng-container matColumnDef="id_sucursal">
         <th mat-header-cell *matHeaderCellDef>Sucursal</th>
-        <td mat-cell *matCellDef="let r">{{ shortId(r.id_sucursal) }}</td>
+        <td mat-cell *matCellDef="let r"><span class="id-pill">{{ shortId(r.id_sucursal) }}</span></td>
       </ng-container>
 
       <ng-container matColumnDef="detalles">
         <th mat-header-cell *matHeaderCellDef>Detalles</th>
-        <td mat-cell *matCellDef="let r">{{ r.detalles?.length ?? 0 }}</td>
+        <td mat-cell *matCellDef="let r"><span class="count-badge">{{ r.detalles?.length ?? 0 }}</span></td>
       </ng-container>
 
       <ng-container matColumnDef="total_compra">
@@ -51,7 +51,15 @@
 
       <ng-container matColumnDef="estado">
         <th mat-header-cell *matHeaderCellDef>Estado</th>
-        <td mat-cell *matCellDef="let r">{{ r.estado || '-' }}</td>
+        <td mat-cell *matCellDef="let r">
+          <span
+            class="status-chip"
+            [class.active]="(r.estado || '').toLowerCase() !== 'anulada'"
+            [class.anulada]="(r.estado || '').toLowerCase() === 'anulada'"
+          >
+            {{ r.estado || 'Sin estado' }}
+          </span>
+        </td>
       </ng-container>
 
       <ng-container matColumnDef="acciones">

@@ -58,6 +58,8 @@ export class FacturaDialogComponent implements OnInit {
   readonly empleados = signal<EmpleadoRead[]>([]);
   readonly sucursales = signal<SucursalRead[]>([]);
   readonly productos = signal<ProductoRead[]>([]);
+  readonly saving = signal(false);
+  readonly apiError = signal<string | null>(null);
 
   readonly form = this.fb.nonNullable.group({
     id_cliente: ['', Validators.required],
@@ -66,7 +68,7 @@ export class FacturaDialogComponent implements OnInit {
     metodo_pago: ['EFECTIVO'],
     id_producto: ['', Validators.required],
     cantidad: [1, [Validators.required, Validators.min(1)]],
-    precio_unitario: [0, [Validators.required, Validators.min(0)]],
+    precio_unitario: [0, [Validators.required, Validators.min(0.01)]],
     estado: ['ACTIVA'],
   });
 
@@ -102,6 +104,8 @@ export class FacturaDialogComponent implements OnInit {
       return;
     }
 
+    this.saving.set(true);
+    this.apiError.set(null);
     const v = this.form.getRawValue();
     const detalle = {
       id_producto: v.id_producto,
@@ -125,11 +129,18 @@ export class FacturaDialogComponent implements OnInit {
 
     req.subscribe({
       next: () => this.ref.close(true),
-      error: this.onError,
+      error: (err: HttpErrorResponse) => this.onSaveError(err),
     });
   }
 
   private readonly onError = (err: HttpErrorResponse): void => {
     this.snack.open(httpErrorMessage(err), 'Cerrar', { duration: 6000 });
+  };
+
+  private readonly onSaveError = (err: HttpErrorResponse): void => {
+    const msg = httpErrorMessage(err);
+    this.apiError.set(msg);
+    this.saving.set(false);
+    this.snack.open(msg, 'Cerrar', { duration: 6000 });
   };
 }

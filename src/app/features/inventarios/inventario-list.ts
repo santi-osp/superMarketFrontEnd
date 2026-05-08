@@ -13,6 +13,7 @@ import { InventarioService } from '../../core/services/inventario.service';
 import { InventarioRead } from '../../models/api.models';
 import { httpErrorMessage } from '../../shared/http-error';
 import { shortId, yesNo } from '../../shared/ids';
+import { setPagedData } from '../../shared/table-utils';
 import { InventarioDialogComponent, InventarioDialogData } from './inventario-dialog';
 
 @Component({
@@ -63,7 +64,7 @@ export class InventarioListComponent implements AfterViewInit {
     this.loading = true;
     this.svc.list().subscribe({
       next: (rows) => {
-        this.dataSource.data = rows;
+        setPagedData(this.dataSource, rows, this.paginator);
         this.loading = false;
       },
       error: (e: HttpErrorResponse) => {
@@ -95,7 +96,12 @@ export class InventarioListComponent implements AfterViewInit {
 
   private open(data: InventarioDialogData): void {
     this.dialog
-      .open(InventarioDialogComponent, { width: '760px', data })
+      .open(InventarioDialogComponent, {
+        width: '860px',
+        maxWidth: '96vw',
+        maxHeight: 'calc(100dvh - 32px)',
+        data,
+      })
       .afterClosed()
       .pipe(filter((saved): saved is boolean => saved === true))
       .subscribe(() => this.reload());

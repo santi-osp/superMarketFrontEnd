@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -34,10 +34,12 @@ export class RolDialogComponent {
   private readonly ref = inject(MatDialogRef<RolDialogComponent, boolean>);
   private readonly snack = inject(MatSnackBar);
   readonly data = inject<RolDialogData>(MAT_DIALOG_DATA);
+  readonly saving = signal(false);
+  readonly apiError = signal<string | null>(null);
   readonly form = this.fb.nonNullable.group({
     nombre: ['', Validators.required],
     descripcion: [''],
-    salario: [0],
+    salario: [0, Validators.min(0)],
     activo: [true],
   });
   constructor() {
@@ -57,6 +59,8 @@ export class RolDialogComponent {
       this.form.markAllAsTouched();
       return;
     }
+    this.saving.set(true);
+    this.apiError.set(null);
     const v = this.form.getRawValue();
     const body = {
       nombre: v.nombre,
@@ -70,8 +74,12 @@ export class RolDialogComponent {
         : this.svc.update(this.data.row!.id, body);
     req.subscribe({
       next: () => this.ref.close(true),
-      error: (err: HttpErrorResponse) =>
-        this.snack.open(httpErrorMessage(err), 'Cerrar', { duration: 6000 }),
+      error: (err: HttpErrorResponse) => {
+        const msg = httpErrorMessage(err);
+        this.apiError.set(msg);
+        this.saving.set(false);
+        this.snack.open(msg, 'Cerrar', { duration: 6000 });
+      },
     });
   }
 }

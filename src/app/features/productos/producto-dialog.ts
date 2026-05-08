@@ -45,11 +45,13 @@ export class ProductoDialogComponent implements OnInit {
   readonly data = inject<ProductoDialogData>(MAT_DIALOG_DATA);
   readonly tipos = signal<TipoProductoRead[]>([]);
   readonly proveedores = signal<ProveedorRead[]>([]);
+  readonly saving = signal(false);
+  readonly apiError = signal<string | null>(null);
 
   readonly form = this.fb.nonNullable.group({
     nombre: ['', Validators.required],
     codigo_barras: [''],
-    precio_venta: [0, Validators.required],
+    precio_venta: [0, [Validators.required, Validators.min(0.01)]],
     fecha_vencimiento: [''],
     id_tipo: [''],
     id_proveedor: [''],
@@ -92,6 +94,8 @@ export class ProductoDialogComponent implements OnInit {
       return;
     }
 
+    this.saving.set(true);
+    this.apiError.set(null);
     const v = this.form.getRawValue();
     const body = {
       nombre: v.nombre,
@@ -110,8 +114,12 @@ export class ProductoDialogComponent implements OnInit {
 
     req.subscribe({
       next: () => this.ref.close(true),
-      error: (err: HttpErrorResponse) =>
-        this.snack.open(httpErrorMessage(err), 'Cerrar', { duration: 6000 }),
+      error: (err: HttpErrorResponse) => {
+        const msg = httpErrorMessage(err);
+        this.apiError.set(msg);
+        this.saving.set(false);
+        this.snack.open(msg, 'Cerrar', { duration: 6000 });
+      },
     });
   }
 }

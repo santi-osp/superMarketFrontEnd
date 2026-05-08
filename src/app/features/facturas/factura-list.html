@@ -1,11 +1,14 @@
 <div class="page-head">
-  <h1>Facturas</h1>
+  <div>
+    <h1>Facturas</h1>
+    <span class="page-kicker">Listado local paginado con los ultimos {{ frontendLimit }} registros disponibles.</span>
+  </div>
   <div class="head-actions">
-    <button mat-flat-button color="primary" (click)="nuevo()">
+    <button mat-flat-button color="primary" class="action-create" (click)="nuevo()">
       <mat-icon>add</mat-icon>
       Nueva
     </button>
-    <button mat-stroked-button (click)="reload()">
+    <button mat-stroked-button class="action-refresh" (click)="reload()">
       <mat-icon>refresh</mat-icon>
       Recargar
     </button>
@@ -17,11 +20,32 @@
     <mat-spinner />
   </div>
 } @else {
+  @if (errorMessage) {
+    <div class="state-panel">
+      <mat-icon>error</mat-icon>
+      <h2>No se pudieron cargar las facturas</h2>
+      <p>{{ errorMessage }}</p>
+      <button mat-stroked-button class="action-refresh" type="button" (click)="reload()">
+        <mat-icon>refresh</mat-icon>
+        Reintentar
+      </button>
+    </div>
+  } @else if (dataSource.data.length === 0) {
+    <div class="state-panel">
+      <mat-icon>receipt_long</mat-icon>
+      <h2>No hay facturas registradas</h2>
+      <p>Crea una factura para validar el flujo completo con el backend.</p>
+      <button mat-flat-button color="primary" class="action-create" type="button" (click)="nuevo()">
+        <mat-icon>add</mat-icon>
+        Nueva factura
+      </button>
+    </div>
+  } @else {
   <div class="table-wrap mat-elevation-z2">
     <table mat-table [dataSource]="dataSource">
       <ng-container matColumnDef="id">
         <th mat-header-cell *matHeaderCellDef>ID</th>
-        <td mat-cell *matCellDef="let r">{{ shortId(r.id) }}</td>
+        <td mat-cell *matCellDef="let r"><span class="id-pill">{{ shortId(r.id) }}</span></td>
       </ng-container>
 
       <ng-container matColumnDef="fecha">
@@ -31,27 +55,33 @@
 
       <ng-container matColumnDef="id_cliente">
         <th mat-header-cell *matHeaderCellDef>Cliente</th>
-        <td mat-cell *matCellDef="let r">{{ shortId(r.id_cliente) }}</td>
+        <td mat-cell *matCellDef="let r"><span class="id-pill">{{ shortId(r.id_cliente) }}</span></td>
       </ng-container>
 
       <ng-container matColumnDef="id_empleado">
         <th mat-header-cell *matHeaderCellDef>Empleado</th>
-        <td mat-cell *matCellDef="let r">{{ shortId(r.id_empleado) }}</td>
+        <td mat-cell *matCellDef="let r"><span class="id-pill">{{ shortId(r.id_empleado) }}</span></td>
       </ng-container>
 
       <ng-container matColumnDef="id_sucursal">
         <th mat-header-cell *matHeaderCellDef>Sucursal</th>
-        <td mat-cell *matCellDef="let r">{{ shortId(r.id_sucursal) }}</td>
+        <td mat-cell *matCellDef="let r"><span class="id-pill">{{ shortId(r.id_sucursal) }}</span></td>
       </ng-container>
 
       <ng-container matColumnDef="detalles">
         <th mat-header-cell *matHeaderCellDef>Detalles</th>
-        <td mat-cell *matCellDef="let r">{{ r.detalles?.length ?? 0 }}</td>
+        <td mat-cell *matCellDef="let r"><span class="count-badge">{{ r.detalles?.length ?? 0 }}</span></td>
       </ng-container>
 
       <ng-container matColumnDef="metodo_pago">
         <th mat-header-cell *matHeaderCellDef>Método pago</th>
-        <td mat-cell *matCellDef="let r">{{ r.metodo_pago || '-' }}</td>
+        <td mat-cell *matCellDef="let r">
+          @if (r.metodo_pago) {
+            <span class="type-badge">{{ r.metodo_pago }}</span>
+          } @else {
+            -
+          }
+        </td>
       </ng-container>
 
       <ng-container matColumnDef="total">
@@ -61,20 +91,35 @@
 
       <ng-container matColumnDef="estado">
         <th mat-header-cell *matHeaderCellDef>Estado</th>
-        <td mat-cell *matCellDef="let r">{{ r.estado || '-' }}</td>
+        <td mat-cell *matCellDef="let r">
+          <span
+            class="status-chip"
+            [class.active]="(r.estado || '').toLowerCase() !== 'anulada'"
+            [class.anulada]="(r.estado || '').toLowerCase() === 'anulada'"
+          >
+            {{ r.estado || 'Sin estado' }}
+          </span>
+        </td>
       </ng-container>
 
       <ng-container matColumnDef="acciones">
         <th mat-header-cell *matHeaderCellDef></th>
         <td mat-cell *matCellDef="let r" class="actions">
-          <button mat-icon-button (click)="editar(r)">
+          <button mat-stroked-button type="button" (click)="verDetalles(r)">
+            <mat-icon>visibility</mat-icon>
+            Ver detalles
+          </button>
+          <button mat-icon-button type="button" (click)="editar(r)" aria-label="Editar factura" matTooltip="Editar">
             <mat-icon>edit</mat-icon>
           </button>
           <button
             mat-icon-button
             color="warn"
+            type="button"
             (click)="anular(r)"
             [disabled]="(r.estado || '').toUpperCase() === 'ANULADA'"
+            aria-label="Anular factura"
+            matTooltip="Anular"
           >
             <mat-icon>block</mat-icon>
           </button>
@@ -87,4 +132,5 @@
 
     <mat-paginator [pageSizeOptions]="[5, 10, 25]" showFirstLastButtons />
   </div>
+  }
 }

@@ -13,6 +13,7 @@ import { CompraProveedorService } from '../../core/services/compra-proveedor.ser
 import { CompraProveedorRead } from '../../models/api.models';
 import { httpErrorMessage } from '../../shared/http-error';
 import { formatDate, money, shortId } from '../../shared/ids';
+import { setPagedData } from '../../shared/table-utils';
 import {
   CompraProveedorDialogComponent,
   CompraProveedorDialogData,
@@ -69,7 +70,7 @@ export class CompraProveedorListComponent implements AfterViewInit {
     this.loading = true;
     this.svc.list().subscribe({
       next: (rows) => {
-        this.dataSource.data = rows;
+        setPagedData(this.dataSource, rows, this.paginator);
         this.loading = false;
       },
       error: (err: HttpErrorResponse) => {
@@ -106,7 +107,12 @@ export class CompraProveedorListComponent implements AfterViewInit {
 
   private open(data: CompraProveedorDialogData): void {
     this.dialog
-      .open(CompraProveedorDialogComponent, { width: '760px', data })
+      .open(CompraProveedorDialogComponent, {
+        width: '1040px',
+        maxWidth: '96vw',
+        maxHeight: 'calc(100dvh - 32px)',
+        data,
+      })
       .afterClosed()
       .pipe(filter((saved): saved is boolean => saved === true))
       .subscribe(() => this.reload());
