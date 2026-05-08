@@ -1,4 +1,4 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
 
@@ -10,6 +10,10 @@ interface UsuarioApiRead {
   username: string;
   id_rol: string;
   estado: boolean;
+  fecha_creacion?: string | null;
+  fecha_actualizacion?: string | null;
+  id_usuario_creacion?: string | null;
+  id_usuario_edicion?: string | null;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -19,9 +23,8 @@ export class UsuarioService {
   constructor(private readonly http: HttpClient) {}
 
   list(): Observable<UsuarioRead[]> {
-    const params = new HttpParams().set('skip', 0).set('limit', 500);
     return this.http
-      .get<UsuarioApiRead[]>(`${this.base}/`, { params })
+      .get<UsuarioApiRead[]>(`${this.base}/`)
       .pipe(map((rows) => rows.map((row) => this.toViewModel(row))));
   }
 
@@ -44,11 +47,14 @@ export class UsuarioService {
   }
 
   delete(id: string): Observable<void> {
-    return this.http.delete(`${this.base}/${id}`, { observe: 'response' }).pipe(map(() => undefined));
+    return this.http
+      .delete(`${this.base}/${id}`, { observe: 'response' })
+      .pipe(map(() => undefined));
   }
 
   private toViewModel(user: UsuarioApiRead): UsuarioRead {
     return {
+      ...user,
       id_usuario: user.id,
       nombre_completo: user.username,
       nombre_usuario: user.username,

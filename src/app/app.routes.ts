@@ -22,9 +22,35 @@ export const routes: Routes = [
           import('./features/usuarios/usuario-list').then((m) => m.UsuarioListComponent),
       },
       {
-        path: 'categorias',
+        path: 'roles',
+        loadComponent: () => import('./features/roles/rol-list').then((m) => m.RolListComponent),
+      },
+      {
+        path: 'empleados',
         loadComponent: () =>
-          import('./features/categorias/categoria-list').then((m) => m.CategoriaListComponent),
+          import('./features/empleados/empleado-list').then((m) => m.EmpleadoListComponent),
+      },
+      {
+        path: 'clientes',
+        loadComponent: () =>
+          import('./features/clientes/cliente-list').then((m) => m.ClienteListComponent),
+      },
+      {
+        path: 'proveedores',
+        loadComponent: () =>
+          import('./features/proveedores/proveedor-list').then((m) => m.ProveedorListComponent),
+      },
+      {
+        path: 'sucursales',
+        loadComponent: () =>
+          import('./features/sucursales/sucursal-list').then((m) => m.SucursalListComponent),
+      },
+      {
+        path: 'tipos-producto',
+        loadComponent: () =>
+          import('./features/tipos-producto/tipo-producto-list').then(
+            (m) => m.TipoProductoListComponent,
+          ),
       },
       {
         path: 'productos',
@@ -32,20 +58,21 @@ export const routes: Routes = [
           import('./features/productos/producto-list').then((m) => m.ProductoListComponent),
       },
       {
-        path: 'pedidos',
+        path: 'inventarios',
         loadComponent: () =>
-          import('./features/pedidos/pedido-list').then((m) => m.PedidoListComponent),
+          import('./features/inventarios/inventario-list').then((m) => m.InventarioListComponent),
       },
       {
-        path: 'detalles-pedido',
+        path: 'compras-proveedor',
         loadComponent: () =>
-          import('./features/detalles-pedido/detalle-pedido-list').then(
-            (m) => m.DetallePedidoListComponent,
+          import('./features/compras-proveedor/compra-proveedor-list').then(
+            (m) => m.CompraProveedorListComponent,
           ),
       },
       {
-        path: 'pagos',
-        loadComponent: () => import('./features/pagos/pago-list').then((m) => m.PagoListComponent),
+        path: 'facturas',
+        loadComponent: () =>
+          import('./features/facturas/factura-list').then((m) => m.FacturaListComponent),
       },
     ],
   },

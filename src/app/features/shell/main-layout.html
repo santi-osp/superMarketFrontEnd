@@ -1,22 +1,13 @@
-<mat-sidenav-container
-  #sidenavShell="matSidenavContainer"
-  class="shell"
-  autosize
->
-  <mat-sidenav
-    mode="side"
-    opened
-    class="nav-rail"
-    [class.collapsed]="sidebarCollapsed()"
-  >
+<mat-sidenav-container #sidenavShell="matSidenavContainer" class="shell" autosize>
+  <mat-sidenav mode="side" opened class="nav-rail" [class.collapsed]="sidebarCollapsed()">
     <div class="nav-brand">
       <div class="nav-brand__mark">
-        <mat-icon class="nav-brand__icon">hub</mat-icon>
+        <mat-icon class="nav-brand__icon">local_grocery_store</mat-icon>
       </div>
       @if (!sidebarCollapsed()) {
         <div class="nav-brand__text">
-          <span class="nav-brand__title">Gestión</span>
-          <span class="nav-brand__sub">API trazabilidad</span>
+          <span class="nav-brand__title">SuperMarket</span>
+          <span class="nav-brand__sub">Gestión operativa</span>
         </div>
       }
     </div>
@@ -65,17 +56,6 @@
       </button>
       <span class="title">Panel</span>
       <span class="spacer"></span>
-      <mat-form-field appearance="outline" class="audit-field" subscriptSizing="dynamic">
-        <mat-label>Usuario (auditoría)</mat-label>
-        <mat-select
-          [value]="audit.usuarioId()"
-          (selectionChange)="onUsuarioAudit($event.value)"
-        >
-          @for (u of usuarios(); track u.id_usuario) {
-            <mat-option [value]="u.id_usuario">{{ u.nombre_usuario }}</mat-option>
-          }
-        </mat-select>
-      </mat-form-field>
       <button mat-icon-button type="button" (click)="logout()" aria-label="Cerrar sesión">
         <mat-icon>logout</mat-icon>
       </button>
