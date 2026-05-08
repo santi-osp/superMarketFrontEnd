@@ -10,6 +10,7 @@ import {
   FacturaRead,
   FacturaUpdate,
 } from '../../models/api.models';
+import { FRONTEND_PAGE_LIMIT } from '../../shared/table-utils';
 
 @Injectable({ providedIn: 'root' })
 export class FacturaService {
@@ -18,7 +19,7 @@ export class FacturaService {
   constructor(private readonly http: HttpClient) {}
 
   list(): Observable<FacturaRead[]> {
-    const params = new HttpParams().set('skip', 0).set('limit', 500);
+    const params = new HttpParams().set('skip', 0).set('limit', FRONTEND_PAGE_LIMIT);
     return this.http.get<FacturaRead[]>(`${this.base}/`, { params });
   }
 

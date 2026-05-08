@@ -47,6 +47,8 @@ export class InventarioDialogComponent implements OnInit {
   readonly data = inject<InventarioDialogData>(MAT_DIALOG_DATA);
   readonly productos = signal<ProductoRead[]>([]);
   readonly sucursales = signal<SucursalRead[]>([]);
+  readonly saving = signal(false);
+  readonly apiError = signal<string | null>(null);
 
   readonly form = this.fb.nonNullable.group({
     id_producto: ['', Validators.required],
@@ -90,6 +92,8 @@ export class InventarioDialogComponent implements OnInit {
       return;
     }
 
+    this.saving.set(true);
+    this.apiError.set(null);
     const v = this.form.getRawValue();
     const body = {
       id_producto: v.id_producto,
@@ -107,11 +111,18 @@ export class InventarioDialogComponent implements OnInit {
 
     req.subscribe({
       next: () => this.ref.close(true),
-      error: this.onError,
+      error: (e: HttpErrorResponse) => this.onSaveError(e),
     });
   }
 
   private readonly onError = (e: HttpErrorResponse): void => {
     this.snack.open(httpErrorMessage(e), 'Cerrar', { duration: 6000 });
+  };
+
+  private readonly onSaveError = (e: HttpErrorResponse): void => {
+    const msg = httpErrorMessage(e);
+    this.apiError.set(msg);
+    this.saving.set(false);
+    this.snack.open(msg, 'Cerrar', { duration: 6000 });
   };
 }

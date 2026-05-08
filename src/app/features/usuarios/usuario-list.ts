@@ -13,6 +13,7 @@ import { UsuarioService } from '../../core/services/usuario.service';
 import { UsuarioRead } from '../../models/api.models';
 import { httpErrorMessage } from '../../shared/http-error';
 import { shortId, yesNo } from '../../shared/ids';
+import { setPagedData } from '../../shared/table-utils';
 import { UsuarioDialogComponent, UsuarioDialogData } from './usuario-dialog';
 
 @Component({
@@ -55,7 +56,7 @@ export class UsuarioListComponent implements AfterViewInit {
     this.loading = true;
     this.usuarioService.list().subscribe({
       next: (rows) => {
-        this.dataSource.data = rows;
+        setPagedData(this.dataSource, rows, this.paginator);
         this.loading = false;
       },
       error: (err: HttpErrorResponse) => {
@@ -87,7 +88,12 @@ export class UsuarioListComponent implements AfterViewInit {
 
   private openDialog(data: UsuarioDialogData): void {
     this.dialog
-      .open(UsuarioDialogComponent, { width: '520px', data })
+      .open(UsuarioDialogComponent, {
+        width: '720px',
+        maxWidth: '96vw',
+        maxHeight: 'calc(100dvh - 32px)',
+        data,
+      })
       .afterClosed()
       .pipe(filter((saved): saved is boolean => saved === true))
       .subscribe(() => this.reload());

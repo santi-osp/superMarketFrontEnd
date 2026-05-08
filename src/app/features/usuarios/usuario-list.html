@@ -1,6 +1,6 @@
 <div class="page-head">
   <h1>Usuarios</h1>
-  <button mat-flat-button color="primary" type="button" (click)="nuevo()">
+  <button mat-flat-button color="primary" type="button" class="action-create" (click)="nuevo()">
     <mat-icon>add</mat-icon>
     Nuevo
   </button>
@@ -19,11 +19,15 @@
       </ng-container>
       <ng-container matColumnDef="id_rol">
         <th mat-header-cell *matHeaderCellDef>Rol</th>
-        <td mat-cell *matCellDef="let r">{{ shortId(r.id_rol) }}</td>
+        <td mat-cell *matCellDef="let r"><span class="id-pill">{{ shortId(r.id_rol) }}</span></td>
       </ng-container>
       <ng-container matColumnDef="estado">
         <th mat-header-cell *matHeaderCellDef>Activo</th>
-        <td mat-cell *matCellDef="let r">{{ yesNo(r.estado) }}</td>
+        <td mat-cell *matCellDef="let r">
+          <span class="status-chip" [class.active]="r.estado" [class.inactive]="!r.estado">
+            {{ yesNo(r.estado) }}
+          </span>
+        </td>
       </ng-container>
       <ng-container matColumnDef="acciones">
         <th mat-header-cell *matHeaderCellDef></th>

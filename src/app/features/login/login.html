@@ -1,58 +1,85 @@
 <div class="login-page">
-  <mat-card class="login-card" appearance="outlined">
-    <mat-card-header>
-      <mat-card-title>Iniciar sesión</mat-card-title>
-      <mat-card-subtitle>
-        Usa las credenciales reales de tu backend para obtener sesión JWT.
-      </mat-card-subtitle>
-    </mat-card-header>
-    <mat-card-content>
-      <form [formGroup]="loginForm" (ngSubmit)="ingresar()" class="login-form" novalidate>
-        <mat-form-field appearance="outline" class="full">
-          <mat-label>Usuario</mat-label>
-          <input matInput formControlName="username" autocomplete="username" />
-          @if (usernameCtrl.touched && usernameCtrl.hasError('required')) {
-            <mat-error>El usuario es obligatorio.</mat-error>
-          }
-          @if (usernameCtrl.touched && usernameCtrl.hasError('maxlength')) {
-            <mat-error>El usuario no puede superar 50 caracteres.</mat-error>
-          }
-        </mat-form-field>
+  <section class="login-shell" aria-label="Acceso SuperMarket">
+    <aside class="brand-panel">
+      <div class="brand-mark">
+        <mat-icon>local_grocery_store</mat-icon>
+      </div>
+      <div>
+        <p class="eyebrow">SuperMarket</p>
+        <h1>Gestion operativa del supermercado</h1>
+        <p class="brand-copy">
+          Administra inventario, facturas, compras y usuarios desde un panel conectado a la API.
+        </p>
+      </div>
+      <div class="brand-metrics" aria-label="Modulos disponibles">
+        <span>JWT</span>
+        <span>CRUD</span>
+        <span>API REST</span>
+      </div>
+    </aside>
 
-        <mat-form-field appearance="outline" class="full">
-          <mat-label>Contraseña</mat-label>
-          <input
-            matInput
-            [type]="hidePassword() ? 'password' : 'text'"
-            formControlName="password"
-            autocomplete="current-password"
-          />
+    <mat-card class="login-card" appearance="outlined">
+      <mat-card-header>
+        <mat-card-title>Iniciar sesion</mat-card-title>
+        <mat-card-subtitle>Usa tus credenciales del backend.</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <form [formGroup]="loginForm" (ngSubmit)="ingresar()" class="login-form" novalidate>
+          <mat-form-field appearance="outline" class="full">
+            <mat-label>Usuario</mat-label>
+            <input matInput formControlName="username" autocomplete="username" />
+            @if (usernameCtrl.touched && usernameCtrl.hasError('required')) {
+              <mat-error>El usuario es obligatorio.</mat-error>
+            }
+            @if (usernameCtrl.touched && usernameCtrl.hasError('maxlength')) {
+              <mat-error>El usuario no puede superar 50 caracteres.</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full">
+            <mat-label>Contrasena</mat-label>
+            <input
+              matInput
+              [type]="hidePassword() ? 'password' : 'text'"
+              formControlName="password"
+              autocomplete="current-password"
+            />
+            <button
+              mat-icon-button
+              matSuffix
+              type="button"
+              (click)="togglePasswordVisibility()"
+              [attr.aria-label]="hidePassword() ? 'Mostrar contrasena' : 'Ocultar contrasena'"
+            >
+              <mat-icon>{{ hidePassword() ? 'visibility' : 'visibility_off' }}</mat-icon>
+            </button>
+            @if (passwordCtrl.touched && passwordCtrl.hasError('required')) {
+              <mat-error>La contrasena es obligatoria.</mat-error>
+            }
+            @if (passwordCtrl.touched && passwordCtrl.hasError('maxlength')) {
+              <mat-error>La contrasena supera el tamano permitido.</mat-error>
+            }
+          </mat-form-field>
+
           <button
-            mat-icon-button
-            matSuffix
-            type="button"
-            (click)="togglePasswordVisibility()"
-            [attr.aria-label]="hidePassword() ? 'Mostrar contraseña' : 'Ocultar contraseña'"
+            mat-flat-button
+            color="primary"
+            type="submit"
+            class="submit-btn"
+            [disabled]="submitting()"
           >
-            <mat-icon>{{ hidePassword() ? 'visibility' : 'visibility_off' }}</mat-icon>
+            @if (submitting()) {
+              <mat-spinner diameter="18" />
+              <span>Validando...</span>
+            } @else {
+              <span class="submit-label">
+                <mat-icon>login</mat-icon>
+                <span>Ingresar</span>
+              </span>
+            }
           </button>
-          @if (passwordCtrl.touched && passwordCtrl.hasError('required')) {
-            <mat-error>La contraseña es obligatoria.</mat-error>
-          }
-          @if (passwordCtrl.touched && passwordCtrl.hasError('maxlength')) {
-            <mat-error>La contraseña supera el tamaño permitido.</mat-error>
-          }
-        </mat-form-field>
-
-        <button mat-flat-button color="primary" type="submit" class="submit-btn" [disabled]="submitting()">
-          @if (submitting()) {
-            <mat-spinner diameter="18" />
-            <span>Validando...</span>
-          } @else {
-            <span>Ingresar</span>
-          }
-        </button>
-      </form>
-    </mat-card-content>
-  </mat-card>
+        </form>
+      </mat-card-content>
+    </mat-card>
+  </section>
 </div>

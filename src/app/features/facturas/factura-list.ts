@@ -7,12 +7,15 @@ import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { filter } from 'rxjs/operators';
 
 import { FacturaService } from '../../core/services/factura.service';
 import { FacturaRead } from '../../models/api.models';
 import { httpErrorMessage } from '../../shared/http-error';
 import { formatDate, money, shortId } from '../../shared/ids';
+import { FRONTEND_PAGE_LIMIT, setPagedData } from '../../shared/table-utils';
+import { FacturaDetailDialogComponent } from './factura-detail-dialog';
 import { FacturaDialogComponent, FacturaDialogData } from './factura-dialog';
 
 @Component({
@@ -25,6 +28,7 @@ import { FacturaDialogComponent, FacturaDialogData } from './factura-dialog';
     MatDialogModule,
     MatProgressSpinnerModule,
     MatSnackBarModule,
+    MatTooltipModule,
   ],
   templateUrl: './factura-list.html',
   styleUrl: './factura-list.scss',
@@ -48,6 +52,8 @@ export class FacturaListComponent implements AfterViewInit {
   ];
   readonly dataSource = new MatTableDataSource<FacturaRead>([]);
   loading = true;
+  errorMessage = '';
+  readonly frontendLimit = FRONTEND_PAGE_LIMIT;
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
@@ -65,14 +71,16 @@ export class FacturaListComponent implements AfterViewInit {
 
   reload(): void {
     this.loading = true;
+    this.errorMessage = '';
     this.svc.list().subscribe({
       next: (rows) => {
-        this.dataSource.data = rows;
+        setPagedData(this.dataSource, rows, this.paginator);
         this.loading = false;
       },
       error: (err: HttpErrorResponse) => {
         this.loading = false;
-        this.snack.open(httpErrorMessage(err), 'Cerrar', { duration: 6000 });
+        this.errorMessage = httpErrorMessage(err);
+        this.snack.open(this.errorMessage, 'Cerrar', { duration: 6000 });
       },
     });
   }
@@ -83,6 +91,15 @@ export class FacturaListComponent implements AfterViewInit {
 
   editar(row: FacturaRead): void {
     this.open({ mode: 'edit', row });
+  }
+
+  verDetalles(row: FacturaRead): void {
+    this.dialog.open(FacturaDetailDialogComponent, {
+      width: '1080px',
+      maxWidth: '96vw',
+      maxHeight: 'calc(100dvh - 32px)',
+      data: { id: row.id, fallback: row },
+    });
   }
 
   anular(row: FacturaRead): void {
@@ -96,6 +113,7 @@ export class FacturaListComponent implements AfterViewInit {
     this.svc.anular(row.id).subscribe({
       next: () => {
         this.snack.open('Factura anulada', 'OK', { duration: 3000 });
+        this.paginator?.firstPage();
         this.reload();
       },
       error: (err: HttpErrorResponse) =>
@@ -105,9 +123,17 @@ export class FacturaListComponent implements AfterViewInit {
 
   private open(data: FacturaDialogData): void {
     this.dialog
-      .open(FacturaDialogComponent, { width: '760px', data })
+      .open(FacturaDialogComponent, {
+        width: '1040px',
+        maxWidth: '96vw',
+        maxHeight: 'calc(100dvh - 32px)',
+        data,
+      })
       .afterClosed()
       .pipe(filter((saved): saved is boolean => saved === true))
-      .subscribe(() => this.reload());
+      .subscribe(() => {
+        this.paginator?.firstPage();
+        this.reload();
+      });
   }
 }
