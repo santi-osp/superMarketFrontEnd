@@ -1,0 +1,84 @@
+name: Deploy - GitHub Pages
+
+on:
+  push:
+    branches: [PROD]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      CI: true
+      API_URL: ${{ vars.API_URL || 'http://localhost:8000' }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Configure production API URL
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const path = 'src/environments/environment.prod.ts';
+          const api = process.env.API_URL.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+          const source = fs.readFileSync(path, 'utf8');
+          fs.writeFileSync(path, source.replace(/apiUrl:\s*'[^']*'/, "apiUrl: '" + api + "'"));
+          NODE
+
+      - name: Resolve GitHub Pages base href
+        id: pages-base
+        shell: bash
+        run: |
+          repo_name="${GITHUB_REPOSITORY#*/}"
+          if [[ "$repo_name" == *.github.io ]]; then
+            echo "base_href=/" >> "$GITHUB_OUTPUT"
+          else
+            echo "base_href=/$repo_name/" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Build production bundle
+        run: npm run build:prod -- --base-href "${{ steps.pages-base.outputs.base_href }}"
+
+      - name: Add SPA fallback
+        run: cp dist/web/browser/index.html dist/web/browser/404.html
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist/web/browser
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
