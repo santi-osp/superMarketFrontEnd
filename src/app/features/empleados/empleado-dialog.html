@@ -2,31 +2,56 @@
 
 <mat-dialog-content class="dialog-body">
   <form [formGroup]="form" class="grid">
+    @if (apiError()) {
+      <div class="dialog-error">{{ apiError() }}</div>
+    }
+
     <mat-form-field appearance="outline">
       <mat-label>Nombre</mat-label>
-      <input matInput formControlName="nombre" />
+      <input matInput formControlName="nombre" autocomplete="name" />
+      @if (form.controls.nombre.touched && form.controls.nombre.hasError('required')) {
+        <mat-error>El nombre es obligatorio.</mat-error>
+      }
     </mat-form-field>
 
     <mat-form-field appearance="outline">
       <mat-label>Tipo ID</mat-label>
-      <input matInput formControlName="tipo_identificacion" />
+      <input matInput formControlName="tipo_identificacion" autocomplete="off" />
+      @if (
+        form.controls.tipo_identificacion.touched &&
+        form.controls.tipo_identificacion.hasError('required')
+      ) {
+        <mat-error>El tipo de identificacion es obligatorio.</mat-error>
+      }
     </mat-form-field>
 
     <mat-form-field appearance="outline">
-      <mat-label>Identificación</mat-label>
-      <input matInput formControlName="identificacion" />
+      <mat-label>Identificacion</mat-label>
+      <input matInput formControlName="identificacion" autocomplete="off" />
+      @if (form.controls.identificacion.touched && form.controls.identificacion.hasError('required')) {
+        <mat-error>La identificacion es obligatoria.</mat-error>
+      }
     </mat-form-field>
 
     <mat-form-field appearance="outline">
       <mat-label>Usuario</mat-label>
-      <input matInput formControlName="username" />
+      <input matInput formControlName="username" autocomplete="username" />
+      @if (form.controls.username.touched && form.controls.username.hasError('required')) {
+        <mat-error>El usuario es obligatorio.</mat-error>
+      }
     </mat-form-field>
 
     <mat-form-field appearance="outline">
-      <mat-label>Contraseña</mat-label>
-      <input matInput type="password" formControlName="password" />
+      <mat-label>Contrasena</mat-label>
+      <input matInput type="password" formControlName="password" autocomplete="new-password" />
       @if (data.mode === 'edit') {
-        <mat-hint>Dejar vacío para no cambiar</mat-hint>
+        <mat-hint>Dejar vacio para no cambiar</mat-hint>
+      }
+      @if (form.controls.password.touched && form.controls.password.hasError('required')) {
+        <mat-error>La contrasena es obligatoria.</mat-error>
+      }
+      @if (form.controls.password.touched && form.controls.password.hasError('minlength')) {
+        <mat-error>La contrasena debe tener al menos 6 caracteres.</mat-error>
       }
     </mat-form-field>
 
@@ -37,33 +62,38 @@
           <mat-option [value]="r.id">{{ r.nombre }}</mat-option>
         }
       </mat-select>
+      @if (form.controls.id_rol.touched && form.controls.id_rol.hasError('required')) {
+        <mat-error>El rol es obligatorio.</mat-error>
+      }
     </mat-form-field>
 
     <mat-form-field appearance="outline">
-      <mat-label>Teléfono</mat-label>
-      <input matInput formControlName="telefono" />
+      <mat-label>Telefono</mat-label>
+      <input matInput formControlName="telefono" autocomplete="tel" />
     </mat-form-field>
 
     <mat-form-field appearance="outline">
       <mat-label>Cargo</mat-label>
-      <input matInput formControlName="cargo" />
+      <input matInput formControlName="cargo" autocomplete="organization-title" />
     </mat-form-field>
 
     <mat-form-field appearance="outline">
       <mat-label>Salario</mat-label>
-      <input matInput formControlName="salario" />
+      <input matInput formControlName="salario" inputmode="decimal" />
     </mat-form-field>
 
     <mat-form-field appearance="outline">
-      <mat-label>Dirección</mat-label>
-      <input matInput formControlName="direccion" />
+      <mat-label>Direccion</mat-label>
+      <input matInput formControlName="direccion" autocomplete="street-address" />
     </mat-form-field>
 
     <mat-checkbox formControlName="estado" class="span-2">Activo</mat-checkbox>
   </form>
 </mat-dialog-content>
 
-<mat-dialog-actions align="end">
-  <button mat-button (click)="cancel()">Cancelar</button>
-  <button mat-flat-button color="primary" (click)="save()">Guardar</button>
+<mat-dialog-actions align="end" class="dialog-actions">
+  <button mat-button type="button" (click)="cancel()" [disabled]="saving()">Cancelar</button>
+  <button mat-flat-button color="primary" type="button" (click)="save()" [disabled]="saving()">
+    {{ saving() ? 'Guardando...' : 'Guardar' }}
+  </button>
 </mat-dialog-actions>

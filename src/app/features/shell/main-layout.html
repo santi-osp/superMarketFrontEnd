@@ -7,10 +7,11 @@
       @if (!sidebarCollapsed()) {
         <div class="nav-brand__text">
           <span class="nav-brand__title">SuperMarket</span>
-          <span class="nav-brand__sub">Gestión operativa</span>
+          <span class="nav-brand__sub">Gestion operativa</span>
         </div>
       }
     </div>
+
     <mat-nav-list class="nav-list">
       @for (item of nav; track item.path) {
         <a
@@ -27,22 +28,41 @@
         </a>
       }
     </mat-nav-list>
+
     <div class="nav-footer">
+      <button
+        mat-flat-button
+        type="button"
+        class="logout-btn logout-btn--side"
+        (click)="logout()"
+        [matTooltip]="sidebarCollapsed() ? 'Cerrar sesion' : ''"
+        matTooltipPosition="right"
+        aria-label="Cerrar sesion"
+      >
+        <mat-icon>logout</mat-icon>
+        @if (!sidebarCollapsed()) {
+          <span>Cerrar sesion</span>
+        }
+      </button>
+
       <button
         mat-stroked-button
         type="button"
         class="collapse-btn"
         (click)="toggleSidebar()"
-        [matTooltip]="sidebarCollapsed() ? 'Expandir menú' : 'Colapsar menú'"
+        [matTooltip]="sidebarCollapsed() ? 'Expandir menu' : 'Colapsar menu'"
         matTooltipPosition="right"
       >
-        <mat-icon>{{ sidebarCollapsed() ? 'chevron_right' : 'chevron_left' }}</mat-icon>
+        <span class="collapse-btn__icon">
+          <mat-icon>{{ sidebarCollapsed() ? 'keyboard_double_arrow_right' : 'keyboard_double_arrow_left' }}</mat-icon>
+        </span>
         @if (!sidebarCollapsed()) {
-          <span>Ocultar menú</span>
+          <span class="collapse-btn__label">Ocultar menu</span>
         }
       </button>
     </div>
   </mat-sidenav>
+
   <mat-sidenav-content class="main-column">
     <mat-toolbar class="top-bar">
       <button
@@ -50,14 +70,21 @@
         type="button"
         class="menu-toggle"
         (click)="toggleSidebar()"
-        aria-label="Alternar menú lateral"
+        aria-label="Alternar menu lateral"
       >
         <mat-icon>menu</mat-icon>
       </button>
       <span class="title">Panel</span>
       <span class="spacer"></span>
-      <button mat-icon-button type="button" (click)="logout()" aria-label="Cerrar sesión">
+      <button
+        mat-flat-button
+        type="button"
+        class="logout-btn logout-btn--top"
+        (click)="logout()"
+        aria-label="Cerrar sesion"
+      >
         <mat-icon>logout</mat-icon>
+        <span>Cerrar sesion</span>
       </button>
     </mat-toolbar>
     <main class="content">

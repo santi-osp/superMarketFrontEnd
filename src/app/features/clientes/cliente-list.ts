@@ -13,6 +13,7 @@ import { ClienteService } from '../../core/services/cliente.service';
 import { ClienteRead } from '../../models/api.models';
 import { httpErrorMessage } from '../../shared/http-error';
 import { yesNo } from '../../shared/ids';
+import { setPagedData } from '../../shared/table-utils';
 import { ClienteDialogComponent, ClienteDialogData } from './cliente-dialog';
 @Component({
   selector: 'app-cliente-list',
@@ -56,7 +57,7 @@ export class ClienteListComponent implements AfterViewInit {
     this.loading = true;
     this.svc.list().subscribe({
       next: (rows) => {
-        this.dataSource.data = rows;
+        setPagedData(this.dataSource, rows, this.paginator);
         this.loading = false;
       },
       error: (err: HttpErrorResponse) => {
@@ -84,7 +85,12 @@ export class ClienteListComponent implements AfterViewInit {
   }
   private open(data: ClienteDialogData): void {
     this.dialog
-      .open(ClienteDialogComponent, { width: '620px', data })
+      .open(ClienteDialogComponent, {
+        width: '860px',
+        maxWidth: '96vw',
+        maxHeight: 'calc(100dvh - 32px)',
+        data,
+      })
       .afterClosed()
       .pipe(filter(Boolean))
       .subscribe(() => this.reload());

@@ -1,29 +1,57 @@
 <div class="page-head">
   <h1>Tipos Producto</h1>
-  <button mat-flat-button color="primary" (click)="nuevo()"><mat-icon>add</mat-icon>Nuevo</button>
+  <button mat-flat-button color="primary" type="button" class="action-create" (click)="nuevo()">
+    <mat-icon>add</mat-icon>
+    Nuevo
+  </button>
 </div>
+
 @if (loading) {
   <div class="loading"><mat-spinner /></div>
 } @else {
   <div class="table-wrap mat-elevation-z2">
     <table mat-table [dataSource]="dataSource">
-      <ng-container matColumnDef="nombre"
-        ><th mat-header-cell *matHeaderCellDef>Nombre</th>
-        <td mat-cell *matCellDef="let r">{{ r.nombre || '?' }}</td></ng-container
-      ><ng-container matColumnDef="descripcion"
-        ><th mat-header-cell *matHeaderCellDef>Descripci?n</th>
-        <td mat-cell *matCellDef="let r">{{ r.descripcion || '?' }}</td></ng-container
-      ><ng-container matColumnDef="estado"
-        ><th mat-header-cell *matHeaderCellDef>Activo</th>
-        <td mat-cell *matCellDef="let r">{{ yesNo(r.estado) }}</td></ng-container
-      >
-      <ng-container matColumnDef="acciones"
-        ><th mat-header-cell *matHeaderCellDef></th>
+      <ng-container matColumnDef="nombre">
+        <th mat-header-cell *matHeaderCellDef>Nombre</th>
+        <td mat-cell *matCellDef="let r">{{ r.nombre || 'Sin dato' }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="descripcion">
+        <th mat-header-cell *matHeaderCellDef>Descripcion</th>
+        <td mat-cell *matCellDef="let r">{{ r.descripcion || 'Sin dato' }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="estado">
+        <th mat-header-cell *matHeaderCellDef>Activo</th>
+        <td mat-cell *matCellDef="let r">
+          <span class="status-chip" [class.active]="r.estado" [class.inactive]="!r.estado">
+            {{ yesNo(r.estado) }}
+          </span>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="acciones">
+        <th mat-header-cell *matHeaderCellDef></th>
         <td mat-cell *matCellDef="let r" class="actions">
-          <button mat-icon-button (click)="editar(r)"><mat-icon>edit</mat-icon></button
-          ><button mat-icon-button (click)="eliminar(r)"><mat-icon>delete</mat-icon></button>
-        </td></ng-container
-      >
+          <button
+            mat-icon-button
+            type="button"
+            (click)="editar(r)"
+            aria-label="Editar tipo de producto"
+          >
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button
+            mat-icon-button
+            type="button"
+            (click)="eliminar(r)"
+            aria-label="Eliminar tipo de producto"
+          >
+            <mat-icon>delete</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
     </table>

@@ -1,6 +1,6 @@
 <div class="page-head">
   <h1>Roles</h1>
-  <button mat-flat-button color="primary" type="button" (click)="nuevo()">
+  <button mat-flat-button color="primary" type="button" class="action-create" (click)="nuevo()">
     <mat-icon>add</mat-icon>Nuevo
   </button>
 </div>
@@ -23,7 +23,11 @@
       >
       <ng-container matColumnDef="activo"
         ><th mat-header-cell *matHeaderCellDef>Activo</th>
-        <td mat-cell *matCellDef="let r">{{ yesNo(r.activo) }}</td></ng-container
+        <td mat-cell *matCellDef="let r">
+          <span class="status-chip" [class.active]="r.activo" [class.inactive]="!r.activo">
+            {{ yesNo(r.activo) }}
+          </span>
+        </td></ng-container
       >
       <ng-container matColumnDef="acciones"
         ><th mat-header-cell *matHeaderCellDef></th>

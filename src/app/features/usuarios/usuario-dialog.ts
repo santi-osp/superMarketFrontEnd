@@ -42,6 +42,8 @@ export class UsuarioDialogComponent implements OnInit {
 
   readonly data = inject<UsuarioDialogData>(MAT_DIALOG_DATA);
   readonly roles = signal<RolRead[]>([]);
+  readonly saving = signal(false);
+  readonly apiError = signal<string | null>(null);
 
   readonly form = this.fb.nonNullable.group({
     username: ['', Validators.required],
@@ -82,6 +84,8 @@ export class UsuarioDialogComponent implements OnInit {
       return;
     }
 
+    this.saving.set(true);
+    this.apiError.set(null);
     const value = this.form.getRawValue();
     if (this.data.mode === 'create') {
       this.usuarioService
@@ -93,7 +97,7 @@ export class UsuarioDialogComponent implements OnInit {
         })
         .subscribe({
           next: () => this.dialogRef.close(true),
-          error: (err: HttpErrorResponse) => this.snack.open(httpErrorMessage(err), 'Cerrar', { duration: 6000 }),
+          error: (err: HttpErrorResponse) => this.onSaveError(err),
         });
       return;
     }
@@ -109,7 +113,14 @@ export class UsuarioDialogComponent implements OnInit {
 
     this.usuarioService.update(this.data.row!.id, body).subscribe({
       next: () => this.dialogRef.close(true),
-      error: (err: HttpErrorResponse) => this.snack.open(httpErrorMessage(err), 'Cerrar', { duration: 6000 }),
+      error: (err: HttpErrorResponse) => this.onSaveError(err),
     });
+  }
+
+  private onSaveError(err: HttpErrorResponse): void {
+    const msg = httpErrorMessage(err);
+    this.apiError.set(msg);
+    this.saving.set(false);
+    this.snack.open(msg, 'Cerrar', { duration: 6000 });
   }
 }

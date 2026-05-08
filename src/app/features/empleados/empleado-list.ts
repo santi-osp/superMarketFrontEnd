@@ -13,6 +13,7 @@ import { EmpleadoService } from '../../core/services/empleado.service';
 import { EmpleadoRead } from '../../models/api.models';
 import { httpErrorMessage } from '../../shared/http-error';
 import { shortId, yesNo } from '../../shared/ids';
+import { setPagedData } from '../../shared/table-utils';
 import { EmpleadoDialogComponent, EmpleadoDialogData } from './empleado-dialog';
 @Component({
   selector: 'app-empleado-list',
@@ -56,7 +57,7 @@ export class EmpleadoListComponent implements AfterViewInit {
     this.loading = true;
     this.svc.list().subscribe({
       next: (r) => {
-        this.dataSource.data = r;
+        setPagedData(this.dataSource, r, this.paginator);
         this.loading = false;
       },
       error: (e: HttpErrorResponse) => {
@@ -72,7 +73,7 @@ export class EmpleadoListComponent implements AfterViewInit {
     this.open({ mode: 'edit', row });
   }
   eliminar(row: EmpleadoRead): void {
-    if (!confirm(`?Eliminar empleado ${row.nombre}?`)) return;
+    if (!confirm(`Eliminar empleado ${row.nombre}?`)) return;
     this.svc.delete(row.id).subscribe({
       next: () => {
         this.snack.open('Empleado eliminado', 'OK', { duration: 3000 });
@@ -84,7 +85,12 @@ export class EmpleadoListComponent implements AfterViewInit {
   }
   private open(data: EmpleadoDialogData): void {
     this.dialog
-      .open(EmpleadoDialogComponent, { width: '700px', data })
+      .open(EmpleadoDialogComponent, {
+        width: '1040px',
+        maxWidth: '96vw',
+        maxHeight: 'calc(100dvh - 32px)',
+        data,
+      })
       .afterClosed()
       .pipe(filter(Boolean))
       .subscribe(() => this.reload());

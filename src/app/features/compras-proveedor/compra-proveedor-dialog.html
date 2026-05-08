@@ -4,6 +4,10 @@
 
 <mat-dialog-content class="dialog-body">
   <form [formGroup]="form" class="grid">
+    @if (apiError()) {
+      <div class="dialog-error">{{ apiError() }}</div>
+    }
+
     <mat-form-field appearance="outline" class="span-2">
       <mat-label>Proveedor</mat-label>
       <mat-select formControlName="id_proveedor">
@@ -11,6 +15,9 @@
           <mat-option [value]="p.id">{{ p.nombre }}</mat-option>
         }
       </mat-select>
+      @if (form.controls.id_proveedor.touched && form.controls.id_proveedor.hasError('required')) {
+        <mat-error>El proveedor es obligatorio.</mat-error>
+      }
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="span-2">
@@ -30,28 +37,39 @@
           <mat-option [value]="p.id">{{ p.nombre }}</mat-option>
         }
       </mat-select>
+      @if (form.controls.id_producto.touched && form.controls.id_producto.hasError('required')) {
+        <mat-error>El producto es obligatorio.</mat-error>
+      }
     </mat-form-field>
 
     <mat-form-field appearance="outline">
       <mat-label>Cantidad</mat-label>
       <input matInput type="number" min="1" formControlName="cantidad" />
+      @if (form.controls.cantidad.touched && form.controls.cantidad.hasError('min')) {
+        <mat-error>La cantidad debe ser mayor a 0.</mat-error>
+      }
     </mat-form-field>
 
     <mat-form-field appearance="outline">
       <mat-label>Precio compra</mat-label>
-      <input matInput type="number" min="0" step="0.01" formControlName="precio_compra" />
+      <input matInput type="number" min="0.01" step="0.01" formControlName="precio_compra" />
+      @if (form.controls.precio_compra.touched && form.controls.precio_compra.hasError('min')) {
+        <mat-error>El precio debe ser mayor a 0.</mat-error>
+      }
     </mat-form-field>
 
     @if (data.mode === 'edit') {
       <mat-form-field appearance="outline" class="span-2">
         <mat-label>Estado</mat-label>
-        <input matInput formControlName="estado" />
+        <input matInput formControlName="estado" autocomplete="off" />
       </mat-form-field>
     }
   </form>
 </mat-dialog-content>
 
-<mat-dialog-actions align="end">
-  <button mat-button (click)="cancel()">Cancelar</button>
-  <button mat-flat-button color="primary" (click)="save()">Guardar</button>
+<mat-dialog-actions align="end" class="dialog-actions">
+  <button mat-button type="button" (click)="cancel()" [disabled]="saving()">Cancelar</button>
+  <button mat-flat-button color="primary" type="button" (click)="save()" [disabled]="saving()">
+    {{ saving() ? 'Guardando...' : 'Guardar' }}
+  </button>
 </mat-dialog-actions>

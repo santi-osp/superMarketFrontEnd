@@ -1,17 +1,33 @@
 <h2 mat-dialog-title>{{ data.mode === 'create' ? 'Nuevo usuario' : 'Editar usuario' }}</h2>
+
 <mat-dialog-content class="dialog-body">
   <form [formGroup]="form" class="grid">
+    @if (apiError()) {
+      <div class="dialog-error">{{ apiError() }}</div>
+    }
+
     <mat-form-field appearance="outline" class="span-2">
       <mat-label>Usuario</mat-label>
       <input matInput formControlName="username" autocomplete="username" />
-    </mat-form-field>
-    <mat-form-field appearance="outline" class="span-2">
-      <mat-label>Contraseña</mat-label>
-      <input matInput type="password" formControlName="password" autocomplete="new-password" />
-      @if (data.mode === 'edit') {
-        <mat-hint>Dejar vacío para no cambiar</mat-hint>
+      @if (form.controls.username.touched && form.controls.username.hasError('required')) {
+        <mat-error>El usuario es obligatorio.</mat-error>
       }
     </mat-form-field>
+
+    <mat-form-field appearance="outline" class="span-2">
+      <mat-label>Contrasena</mat-label>
+      <input matInput type="password" formControlName="password" autocomplete="new-password" />
+      @if (data.mode === 'edit') {
+        <mat-hint>Dejar vacio para no cambiar</mat-hint>
+      }
+      @if (form.controls.password.touched && form.controls.password.hasError('required')) {
+        <mat-error>La contrasena es obligatoria.</mat-error>
+      }
+      @if (form.controls.password.touched && form.controls.password.hasError('minlength')) {
+        <mat-error>La contrasena debe tener al menos 6 caracteres.</mat-error>
+      }
+    </mat-form-field>
+
     <mat-form-field appearance="outline" class="span-2">
       <mat-label>Rol</mat-label>
       <mat-select formControlName="id_rol">
@@ -19,11 +35,18 @@
           <mat-option [value]="rol.id">{{ rol.nombre }}</mat-option>
         }
       </mat-select>
+      @if (form.controls.id_rol.touched && form.controls.id_rol.hasError('required')) {
+        <mat-error>El rol es obligatorio.</mat-error>
+      }
     </mat-form-field>
+
     <mat-checkbox formControlName="estado" class="span-2">Activo</mat-checkbox>
   </form>
 </mat-dialog-content>
-<mat-dialog-actions align="end">
-  <button mat-button type="button" (click)="cancel()">Cancelar</button>
-  <button mat-flat-button color="primary" type="button" (click)="save()">Guardar</button>
+
+<mat-dialog-actions align="end" class="dialog-actions">
+  <button mat-button type="button" (click)="cancel()" [disabled]="saving()">Cancelar</button>
+  <button mat-flat-button color="primary" type="button" (click)="save()" [disabled]="saving()">
+    {{ saving() ? 'Guardando...' : 'Guardar' }}
+  </button>
 </mat-dialog-actions>

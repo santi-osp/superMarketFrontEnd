@@ -1,39 +1,29 @@
 # SuperMarket FrontEnd
 
-Aplicación web de SuperMarket construida con **Angular 20** y **Angular Material**.
+Aplicacion web de administracion para SuperMarket, construida con **Angular 20**, **Angular Material** y consumo de API REST protegida con **JWT**.
 
-Este frontend consume la API del backend para gestionar:
-
-- Usuarios
-- Roles
-- Empleados
-- Clientes
-- Proveedores
-- Sucursales
-- Tipos de producto
-- Productos
-- Inventarios
-- Compras a proveedor
-- Facturas
+El frontend cubre login, rutas protegidas, CRUD de entidades principales, tablas paginadas, modales de creacion/edicion, detalle de facturas y despliegue a GitHub Pages.
 
 ---
 
-## 1) Stack técnico
+## Stack
 
-- **Framework:** Angular 20 (standalone components)
-- **UI:** Angular Material + SCSS
-- **HTTP:** `HttpClient` con interceptor de autenticación JWT
-- **Estado liviano local:** `signal` / `computed` de Angular
-- **Build/Test:** Angular CLI + Karma/Jasmine
+- Angular 20 con standalone components.
+- Angular Material + SCSS.
+- `HttpClient` con interceptor JWT.
+- Estado local con `signal` y `computed`.
+- Proxy local para conectar con FastAPI.
+- Build y test con Angular CLI.
 
 ---
 
-## 2) Requisitos
+## Requisitos
 
-- **Node.js** 20+ (recomendado LTS)
-- **npm** 10+
+- Node.js 20+.
+- npm 10+.
+- Backend FastAPI levantado en `http://localhost:8000`.
 
-Verifica versiones:
+Verificar versiones:
 
 ```bash
 node -v
@@ -42,9 +32,9 @@ npm -v
 
 ---
 
-## 3) Instalación
+## Instalacion
 
-Desde la carpeta `superMarketFrontEnd`:
+Desde `superMarketFrontEnd`:
 
 ```bash
 npm install
@@ -52,45 +42,48 @@ npm install
 
 ---
 
-## 4) Ejecución local
-
-### Desarrollo
+## Ejecucion local
 
 ```bash
 npm start
 ```
 
-La app abre en: `http://localhost:4200`
+La app queda en:
 
-### Modo QA
-
-```bash
-npm run start:qa
+```text
+http://localhost:4200
 ```
 
-### Modo producción (serve local)
+El proxy local envia `/api/*` hacia:
+
+```text
+http://localhost:8000
+```
+
+Backend esperado:
 
 ```bash
-npm run start:prod
+cd ../superMarketBackEnd
+python -m uvicorn src.main:app --reload --host 127.0.0.1 --port 8000
 ```
 
 ---
 
-## 5) Build
+## Scripts
 
 ```bash
+npm start
+npm run start:dev
+npm run start:qa
+npm run start:prod
 npm run build
-```
-
-También disponibles:
-
-```bash
 npm run build:dev
 npm run build:qa
 npm run build:prod
+npm test
 ```
 
-Salida del build:
+Salida de build:
 
 ```text
 dist/web
@@ -98,33 +91,22 @@ dist/web
 
 ---
 
-## 6) Pruebas
+## Configuracion de API
 
-```bash
-npm test
+Archivos de entorno:
+
+- `src/environments/environment.ts`
+- `src/environments/environment.dev.ts`
+- `src/environments/environment.qa.ts`
+- `src/environments/environment.prod.ts`
+
+En desarrollo se usa:
+
+```ts
+apiUrl: '/api'
 ```
 
----
-
-## 7) Configuración de entornos
-
-Archivos en `src/environments`:
-
-- `environment.ts` (base)
-- `environment.dev.ts`
-- `environment.qa.ts`
-- `environment.prod.ts`
-
-### API URL
-
-- En **dev/qa** se usa `apiUrl: '/api'` con proxy local.
-- En **prod** está configurado `apiUrl: 'http://localhost:8000'` (ajústalo según tu despliegue real).
-
----
-
-## 8) Proxy local (evitar CORS en desarrollo)
-
-Archivo: `proxy.conf.json`
+Proxy:
 
 ```json
 {
@@ -140,55 +122,39 @@ Archivo: `proxy.conf.json`
 }
 ```
 
-Esto permite que llamadas a `/api/...` desde Angular se redirijan a `http://localhost:8000/...`.
+Si el backend cambia de puerto, actualizar `proxy.conf.json`.
 
 ---
 
-## 9) Autenticación y seguridad de rutas
+## Autenticacion
 
-### Login
+Flujo actual:
 
-- Endpoint consumido: `POST /auth/login`
-- Luego consulta: `GET /auth/me`
-- `AuthService` guarda token y usuario en `localStorage`.
-
-### Interceptor
-
-`authInterceptor` agrega header:
+1. Login con `POST /auth/login`.
+2. Consulta de usuario con `GET /auth/me`.
+3. Token y usuario se guardan en `localStorage`.
+4. `authInterceptor` agrega:
 
 ```http
 Authorization: Bearer <token>
 ```
 
-para requests autenticados (excepto login).
+Guards actuales:
 
-### Guards
+- `loginRedirectGuard`: evita volver a `/login` con sesion activa.
+- `auditUserGuard`: protege `/app` si no hay sesion valida.
 
-- `loginRedirectGuard`: si ya hay sesión, redirige `/login` -> `/app`.
-- `auditUserGuard`: protege `/app`; si no hay sesión válida, redirige a `/login`.
+Pendiente importante:
 
----
-
-## 10) Estructura del proyecto
-
-```text
-src/
-  app/
-    core/                 # auth, guards, interceptor, servicios
-    features/             # módulos funcionales (listas y diálogos)
-    models/               # contratos de API (api.models.ts)
-    shared/               # utilidades compartidas (ids, http-error)
-    app.routes.ts         # ruteo principal
-    app.config.ts         # providers globales
-  environments/           # configuración por entorno
-```
+- Agregar permisos por rol en frontend y backend. Hoy el guard valida sesion, no permisos por modulo.
 
 ---
 
-## 11) Módulos/Features y rutas
+## Rutas
 
-Las rutas viven bajo `/app` y cargan componentes lazy:
+Rutas principales:
 
+- `/login`
 - `/app/usuarios`
 - `/app/roles`
 - `/app/empleados`
@@ -201,89 +167,203 @@ Las rutas viven bajo `/app` y cargan componentes lazy:
 - `/app/compras-proveedor`
 - `/app/facturas`
 
-Además:
+Pendientes propuestos:
 
-- `/login`
-
----
-
-## 12) Patrón de implementación de features
-
-Cada feature sigue un patrón homogéneo:
-
-- `*-list.ts/html/scss`: tabla, paginación, recarga, acciones
-- `*-dialog.ts/html`: create/edit
-- servicio en `core/services/*`
-- manejo de errores centralizado con `httpErrorMessage(...)`
-
-Este patrón facilita mantenimiento, onboarding y consistencia visual/funcional.
+- `/app/dashboard`
+- `/app/perfil`
 
 ---
 
-## 13) Consideraciones de integración con backend
+## Funcionalidad actual
 
-1. Levanta backend en `http://localhost:8000`.
-2. Asegura endpoints de auth y CRUD disponibles.
-3. Si cambias host/puerto de backend:
-   - ajusta `proxy.conf.json` (dev)
-   - ajusta `environment.prod.ts` (prod)
+Implementado:
+
+- Login JWT.
+- Rutas protegidas.
+- Sidebar responsive con boton de colapsar/expandir y logout visible.
+- Tablas con paginacion frontend.
+- Badges para estados, IDs, conteos y tipos de dato.
+- Modales de creacion/edicion para entidades principales.
+- Loading, errores y estados vacios en vistas clave.
+- CRUD o consultas representativas de usuarios, roles, empleados, clientes, proveedores, sucursales, tipos de producto, productos, inventarios, compras y facturas.
+- Detalle de factura en modal.
+- Detalle de factura muestra nombre de producto usando `ProductoService` cuando el producto esta disponible.
+- Botones de accion con paleta visual consistente.
+- Login redisenado con panel visual y mejor jerarquia.
+- Scrollbars personalizados.
+- GitHub Actions para publicar GitHub Pages.
+- `.gitignore` actualizado para evitar subir logs.
 
 ---
 
-## 14) Troubleshooting
+## Facturas
 
-### a) Error CORS en desarrollo
+La pantalla de facturas incluye:
 
-- Verifica que ejecutes con `npm start` (usa proxy).
-- Revisa `proxy.conf.json` y backend activo en `:8000`.
+- Crear factura.
+- Editar factura.
+- Anular factura.
+- Ver detalles.
+- Cabecera de factura.
+- Estado.
+- Total.
+- Metodo de pago.
+- Lineas de detalle.
+- Nombre de producto en detalle cuando existe en el listado de productos.
 
-### b) 401 / sesión inválida
+Limitacion actual:
 
-- Cierra sesión y vuelve a autenticarte.
-- Limpia localStorage si es necesario.
+- Si la factura referencia un producto que no viene en `ProductoService.list()`, el modal muestra fallback con ID corto.
 
-### c) VS Code muestra errores “fantasma”
+---
 
-1. `Ctrl + Shift + P` -> **TypeScript: Restart TS Server**
-2. `Ctrl + Shift + P` -> **Developer: Reload Window**
+## Paginacion
 
-### d) Build falla
+Estado actual:
 
-Ejecuta:
+- Paginacion frontend-only con `MatPaginator`.
+- Listados cargan datos con limites altos, por ejemplo `limit=500` en flujos grandes.
+- Backend usa `skip`/`limit`, pero no devuelve metadata de total.
+
+Pendiente recomendado:
+
+- Backend debe devolver `{ items, total, page, page_size, total_pages }`.
+- Frontend debe pedir pagina al backend cuando cambie `MatPaginator`.
+- Despues de crear, editar, eliminar o anular se debe recargar y ajustar pagina actual para evitar paginas vacias.
+
+---
+
+## Despliegue GitHub Pages
+
+Workflow:
+
+```text
+.github/workflows/github-pages.yml
+```
+
+Dispara en:
+
+- push a rama `PROD`
+- `workflow_dispatch`
+
+Variable opcional de repositorio:
+
+```text
+API_URL
+```
+
+Si no se define, usa:
+
+```text
+http://localhost:8000
+```
+
+Nota: para produccion real, `API_URL` debe apuntar a backend desplegado y con CORS permitido para la URL de GitHub Pages.
+
+---
+
+## Pendientes principales
+
+1. **Permisos por rol**
+   - Crear `PermissionService`.
+   - Crear guard por rol/modulo.
+   - Filtrar sidebar por permisos.
+   - Ocultar botones de crear/editar/eliminar/anular segun rol.
+   - Reforzar permisos en backend; ocultar en frontend no basta como seguridad.
+
+2. **Panel de perfil**
+   - Crear `/app/perfil`.
+   - Mostrar usuario autenticado, rol y estado.
+   - Permitir configuraciones basicas de cuenta.
+   - Agregar cambio de contrasena solo si backend expone endpoint compatible.
+
+3. **Dashboard de estadisticas**
+   - Crear `/app/dashboard`.
+   - Redirigir `/app` al dashboard.
+   - Mostrar totales de productos, clientes, facturas, compras e inventarios.
+   - Mostrar facturas anuladas/activas y stock bajo usando datos reales.
+
+4. **Paginacion backend-driven**
+   - Dejar de depender de `limit=500`.
+   - Usar metadata real desde backend.
+   - Mantener filtros, reload y acciones sin paginas vacias.
+
+5. **Toolbar uniforme**
+   - Agregar `Recargar` a todas las listas CRUD.
+   - Mantener mismo orden, color y comportamiento.
+
+6. **Confirmaciones reutilizables**
+   - Reemplazar `window.confirm` por dialogo Material reutilizable.
+
+7. **Limpieza legacy**
+   - Auditar `CategoriaService` y modelos antiguos.
+   - Eliminar solo lo confirmado como no usado.
+
+8. **README de entrega**
+   - Agregar enlace a video demo.
+   - Agregar credenciales de prueba.
+   - Agregar matriz final de roles/permisos.
+
+---
+
+## Checklist contra enunciado
+
+- [x] Frontend consume API REST.
+- [x] Login JWT.
+- [x] Token enviado por interceptor.
+- [x] Rutas protegidas por sesion.
+- [x] CORS/proxy documentado para desarrollo.
+- [x] CRUD o consultas de varias entidades.
+- [x] Modales create/edit.
+- [x] Detalle de facturas.
+- [x] Paginacion funcional frontend-only.
+- [x] README con instalacion, ejecucion y API base.
+- [x] Pipeline GitHub Pages.
+- [ ] Permisos por rol.
+- [ ] Dashboard de estadisticas.
+- [ ] Panel de perfil.
+- [ ] Paginacion backend-driven con total real.
+- [ ] Enlace a video demo.
+
+---
+
+## Validacion usada
+
+Comando principal:
 
 ```bash
 npm run build
 ```
 
-y revisa el primer error de TypeScript/Angular reportado.
+Resultado esperado:
 
----
-
-## 15) Scripts disponibles
-
-```json
-{
-  "start": "ng serve",
-  "start:dev": "ng serve --configuration development",
-  "start:qa": "ng serve --configuration qa",
-  "start:prod": "ng serve --configuration production",
-  "build": "ng build",
-  "build:dev": "ng build --configuration development",
-  "build:qa": "ng build --configuration qa",
-  "build:prod": "ng build --configuration production",
-  "watch": "ng build --watch --configuration development",
-  "test": "ng test"
-}
+```text
+Application bundle generation complete.
 ```
 
 ---
 
-## 16) Estado actual del frontend
+## Troubleshooting
 
-El frontend está organizado por features y compila correctamente en el estado actual del proyecto.
+### Error CORS
 
-Comando de verificación:
+- Confirmar backend en `http://localhost:8000`.
+- Ejecutar frontend con `npm start`.
+- Revisar `proxy.conf.json`.
 
-```bash
-npm run build
-```
+### Error 401
+
+- Cerrar sesion.
+- Limpiar `localStorage`.
+- Volver a iniciar sesion.
+
+### No carga GitHub Pages
+
+- Verificar que el workflow corra desde rama `PROD`.
+- Verificar Pages habilitado en GitHub.
+- Verificar `API_URL` si el backend no esta en localhost.
+
+### Backend en otro puerto
+
+- Cambiar `proxy.conf.json`.
+- Cambiar `environment.prod.ts` o variable `API_URL` en GitHub.

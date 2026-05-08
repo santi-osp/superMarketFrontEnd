@@ -2,31 +2,40 @@
 
 <mat-dialog-content class="dialog-body">
   <form [formGroup]="form" class="grid">
+    @if (apiError()) {
+      <div class="dialog-error">{{ apiError() }}</div>
+    }
+
     <mat-form-field appearance="outline">
       <mat-label>Nombre</mat-label>
-      <input matInput type="text" formControlName="nombre" />
+      <input matInput type="text" formControlName="nombre" autocomplete="organization" />
+      @if (form.controls.nombre.touched && form.controls.nombre.hasError('required')) {
+        <mat-error>El nombre es obligatorio.</mat-error>
+      }
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="span-2">
-      <mat-label>Dirección</mat-label>
-      <textarea matInput formControlName="direccion"></textarea>
+      <mat-label>Direccion</mat-label>
+      <textarea matInput formControlName="direccion" autocomplete="street-address"></textarea>
     </mat-form-field>
 
     <mat-form-field appearance="outline">
       <mat-label>Gerente</mat-label>
-      <input matInput type="text" formControlName="gerente" />
+      <input matInput type="text" formControlName="gerente" autocomplete="name" />
     </mat-form-field>
 
     <mat-form-field appearance="outline">
-      <mat-label>Teléfono</mat-label>
-      <input matInput type="text" formControlName="telefono" />
+      <mat-label>Telefono</mat-label>
+      <input matInput type="text" formControlName="telefono" autocomplete="tel" />
     </mat-form-field>
 
     <mat-checkbox formControlName="estado" class="span-2">Activo</mat-checkbox>
   </form>
 </mat-dialog-content>
 
-<mat-dialog-actions align="end">
-  <button mat-button (click)="cancel()">Cancelar</button>
-  <button mat-flat-button color="primary" (click)="save()">Guardar</button>
+<mat-dialog-actions align="end" class="dialog-actions">
+  <button mat-button type="button" (click)="cancel()" [disabled]="saving()">Cancelar</button>
+  <button mat-flat-button color="primary" type="button" (click)="save()" [disabled]="saving()">
+    {{ saving() ? 'Guardando...' : 'Guardar' }}
+  </button>
 </mat-dialog-actions>

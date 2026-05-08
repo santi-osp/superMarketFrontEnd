@@ -2,6 +2,10 @@
 
 <mat-dialog-content class="dialog-body">
   <form [formGroup]="form" class="grid">
+    @if (apiError()) {
+      <div class="dialog-error">{{ apiError() }}</div>
+    }
+
     <mat-form-field appearance="outline" class="span-2">
       <mat-label>Producto</mat-label>
       <mat-select formControlName="id_producto">
@@ -9,6 +13,9 @@
           <mat-option [value]="p.id">{{ p.nombre }}</mat-option>
         }
       </mat-select>
+      @if (form.controls.id_producto.touched && form.controls.id_producto.hasError('required')) {
+        <mat-error>El producto es obligatorio.</mat-error>
+      }
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="span-2">
@@ -18,28 +25,39 @@
           <mat-option [value]="s.id">{{ s.nombre }}</mat-option>
         }
       </mat-select>
+      @if (form.controls.id_sucursal.touched && form.controls.id_sucursal.hasError('required')) {
+        <mat-error>La sucursal es obligatoria.</mat-error>
+      }
     </mat-form-field>
 
     <mat-form-field appearance="outline">
       <mat-label>Stock actual</mat-label>
       <input matInput type="number" min="0" formControlName="stock_actual" />
+      @if (form.controls.stock_actual.touched && form.controls.stock_actual.hasError('min')) {
+        <mat-error>El stock no puede ser negativo.</mat-error>
+      }
     </mat-form-field>
 
     <mat-form-field appearance="outline">
-      <mat-label>Stock mínimo</mat-label>
+      <mat-label>Stock minimo</mat-label>
       <input matInput type="number" min="0" formControlName="stock_minimo" />
+      @if (form.controls.stock_minimo.touched && form.controls.stock_minimo.hasError('min')) {
+        <mat-error>El stock minimo no puede ser negativo.</mat-error>
+      }
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="span-2">
-      <mat-label>Ubicación</mat-label>
-      <input matInput formControlName="ubicacion" />
+      <mat-label>Ubicacion</mat-label>
+      <input matInput formControlName="ubicacion" autocomplete="off" />
     </mat-form-field>
 
     <mat-checkbox formControlName="estado" class="span-2">Activo</mat-checkbox>
   </form>
 </mat-dialog-content>
 
-<mat-dialog-actions align="end">
-  <button mat-button (click)="cancel()">Cancelar</button>
-  <button mat-flat-button color="primary" (click)="save()">Guardar</button>
+<mat-dialog-actions align="end" class="dialog-actions">
+  <button mat-button type="button" (click)="cancel()" [disabled]="saving()">Cancelar</button>
+  <button mat-flat-button color="primary" type="button" (click)="save()" [disabled]="saving()">
+    {{ saving() ? 'Guardando...' : 'Guardar' }}
+  </button>
 </mat-dialog-actions>

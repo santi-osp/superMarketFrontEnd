@@ -13,6 +13,7 @@ import { RolService } from '../../core/services/rol.service';
 import { RolRead } from '../../models/api.models';
 import { httpErrorMessage } from '../../shared/http-error';
 import { money, yesNo } from '../../shared/ids';
+import { setPagedData } from '../../shared/table-utils';
 import { RolDialogComponent, RolDialogData } from './rol-dialog';
 
 @Component({
@@ -49,7 +50,7 @@ export class RolListComponent implements AfterViewInit {
     this.loading = true;
     this.svc.list().subscribe({
       next: (rows) => {
-        this.dataSource.data = rows;
+        setPagedData(this.dataSource, rows, this.paginator);
         this.loading = false;
       },
       error: (err: HttpErrorResponse) => {
@@ -77,7 +78,12 @@ export class RolListComponent implements AfterViewInit {
   }
   private open(data: RolDialogData): void {
     this.dialog
-      .open(RolDialogComponent, { width: '520px', data })
+      .open(RolDialogComponent, {
+        width: '720px',
+        maxWidth: '96vw',
+        maxHeight: 'calc(100dvh - 32px)',
+        data,
+      })
       .afterClosed()
       .pipe(filter((saved): saved is boolean => saved === true))
       .subscribe(() => this.reload());
