@@ -1,11 +1,3 @@
-.page-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 16px;
-}
-
 .loading {
   display: grid;
   place-items: center;
@@ -23,6 +15,10 @@ table {
 
 .actions {
   white-space: nowrap;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 4px;
 }
 
 
