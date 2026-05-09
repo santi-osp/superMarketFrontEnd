@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { AfterViewInit, Component, inject, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, computed, inject, ViewChild } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
@@ -9,6 +9,8 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { filter } from 'rxjs/operators';
 
+import { AuthService } from '../../core/auth.service';
+import { ROLE_IDS } from '../../core/constants/role-constants';
 import { SucursalService } from '../../core/services/sucursal.service';
 import { SucursalRead } from '../../models/api.models';
 import { httpErrorMessage } from '../../shared/http-error';
@@ -34,7 +36,9 @@ export class SucursalListComponent implements AfterViewInit {
   private readonly svc = inject(SucursalService);
   private readonly dialog = inject(MatDialog);
   private readonly snack = inject(MatSnackBar);
+  private readonly auth = inject(AuthService);
 
+  readonly canManage = computed(() => this.auth.currentUser()?.id_rol === ROLE_IDS.ADMIN);
   readonly displayedColumns = ['nombre', 'direccion', 'gerente', 'telefono', 'estado', 'acciones'];
   readonly dataSource = new MatTableDataSource<SucursalRead>([]);
   loading = true;
