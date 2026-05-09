@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, inject, signal, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, computed, inject, signal, ViewChild } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
@@ -8,6 +8,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 
 import { AuthService } from '../../core/auth.service';
+import { MENU_ITEMS_BY_ROLE, ROLE_IDS } from '../../core/constants/role-constants';
 
 const SIDEBAR_KEY = 'shell_sidebar_collapsed';
 
@@ -37,7 +38,7 @@ export class MainLayoutComponent implements AfterViewInit {
     typeof localStorage !== 'undefined' && localStorage.getItem(SIDEBAR_KEY) === '1',
   );
 
-  readonly nav = [
+  private readonly allNavItems = [
     { path: 'usuarios', label: 'Usuarios', icon: 'people' },
     { path: 'roles', label: 'Roles', icon: 'admin_panel_settings' },
     { path: 'empleados', label: 'Empleados', icon: 'badge' },
@@ -50,6 +51,20 @@ export class MainLayoutComponent implements AfterViewInit {
     { path: 'compras-proveedor', label: 'Compras', icon: 'shopping_bag' },
     { path: 'facturas', label: 'Facturas', icon: 'receipt_long' },
   ];
+
+  /**
+   * Menú filtrado según el rol del usuario autenticado
+   * Solo muestra los items que el usuario tiene permiso para ver
+   */
+  readonly nav = computed(() => {
+    const user = this.auth.currentUser();
+    if (!user?.id_rol) {
+      return [];
+    }
+
+    const userPermissions = MENU_ITEMS_BY_ROLE[user.id_rol] || [];
+    return this.allNavItems.filter((item) => userPermissions.includes(item.path));
+  });
 
   ngAfterViewInit(): void {
     this.syncContentMarginsWithDrawer();
