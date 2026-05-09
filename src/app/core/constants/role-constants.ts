@@ -29,10 +29,14 @@ export const ROLE_PERMISSIONS: Record<string, string[]> = {
     'facturas',
   ],
   [ROLE_IDS.EMPLEADO]: [
-    // Solo acceso a facturas
+    // Acceso de lectura a estas rutas (sin CRUD)
     'facturas',
-    // Y acceso limitado a clientes
     'clientes',
+    'proveedores',
+    'sucursales',
+    'tipos-producto',
+    'productos',
+    'compras-proveedor',
   ],
 };
 
@@ -53,5 +57,13 @@ export const MENU_ITEMS_BY_ROLE: Record<string, string[]> = {
     'compras-proveedor',
     'facturas',
   ],
-  [ROLE_IDS.EMPLEADO]: ['facturas', 'clientes'],
+  [ROLE_IDS.EMPLEADO]: [
+    'facturas',
+    'clientes',
+    'proveedores',
+    'sucursales',
+    'tipos-producto',
+    'productos',
+    'compras-proveedor',
+  ],
 };
