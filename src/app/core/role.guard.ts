@@ -6,7 +6,7 @@ import { ROLE_PERMISSIONS } from './constants/role-constants';
 
 /**
  * Guard que valida acceso a rutas según el rol del usuario
- * 
+ *
  * Uso en rutas:
  * ```typescript
  * {
@@ -48,6 +48,7 @@ export const roleGuard: CanActivateFn = (route) => {
   }
 
   // 6. Si no tiene permisos, redirigir a la página principal
-  console.warn(`Usuario ${user.username} con rol ${user.id_rol} intentó acceder a ${requestedRoute}`);
+  const displayName = 'username' in user && user.username ? user.username : user.id;
+  console.warn(`Usuario ${displayName} con rol ${user.id_rol} intentó acceder a ${requestedRoute}`);
   return router.createUrlTree(['/app']);
 };

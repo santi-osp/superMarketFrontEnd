@@ -1,5 +1,5 @@
 export const environment = {
   name: 'qa',
   production: false,
-  apiUrl: '/api',
+  apiUrl: 'http://localhost:8000',
 };
