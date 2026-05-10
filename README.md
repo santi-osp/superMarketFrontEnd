@@ -12,7 +12,7 @@ El frontend cubre login, rutas protegidas, CRUD de entidades principales, tablas
 - Angular Material + SCSS.
 - `HttpClient` con interceptor JWT.
 - Estado local con `signal` y `computed`.
-- Proxy local para conectar con FastAPI.
+- Conexion directa a FastAPI (sin proxy).
 - Build y test con Angular CLI.
 
 ---
@@ -52,12 +52,6 @@ La app queda en:
 
 ```text
 http://localhost:4200
-```
-
-El proxy local envia `/api/*` hacia:
-
-```text
-http://localhost:8000
 ```
 
 Backend esperado:
@@ -103,26 +97,10 @@ Archivos de entorno:
 En desarrollo se usa:
 
 ```ts
-apiUrl: '/api'
+apiUrl: 'http://localhost:8000';
 ```
 
-Proxy:
-
-```json
-{
-  "/api": {
-    "target": "http://localhost:8000",
-    "secure": false,
-    "changeOrigin": true,
-    "logLevel": "debug",
-    "pathRewrite": {
-      "^/api": ""
-    }
-  }
-}
-```
-
-Si el backend cambia de puerto, actualizar `proxy.conf.json`.
+Si el backend cambia de puerto, actualizar el valor de `apiUrl` en los archivos de entorno.
 
 ---
 
@@ -312,7 +290,7 @@ Nota: para produccion real, `API_URL` debe apuntar a backend desplegado y con CO
 - [x] Login JWT.
 - [x] Token enviado por interceptor.
 - [x] Rutas protegidas por sesion.
-- [x] CORS/proxy documentado para desarrollo.
+- [x] CORS documentado para desarrollo.
 - [x] CRUD o consultas de varias entidades.
 - [x] Modales create/edit.
 - [x] Detalle de facturas.
@@ -348,8 +326,7 @@ Application bundle generation complete.
 ### Error CORS
 
 - Confirmar backend en `http://localhost:8000`.
-- Ejecutar frontend con `npm start`.
-- Revisar `proxy.conf.json`.
+- Verificar que el backend permita el origen del frontend en `CORS_ALLOW_ORIGINS`.
 
 ### Error 401
 
@@ -365,5 +342,4 @@ Application bundle generation complete.
 
 ### Backend en otro puerto
 
-- Cambiar `proxy.conf.json`.
-- Cambiar `environment.prod.ts` o variable `API_URL` en GitHub.
+- Cambiar los archivos de entorno (`environment.*.ts`) o la variable `API_URL` en GitHub.
