@@ -3,6 +3,7 @@ import { computed, Injectable, signal } from '@angular/core';
 import { catchError, Observable, switchMap, tap, throwError } from 'rxjs';
 
 import { environment } from '../../environments/environment';
+import { AuditContextService } from './audit-context.service';
 
 const ACCESS_TOKEN_KEY = 'auth_access_token';
 const EXPIRES_AT_KEY = 'auth_expires_at';
@@ -26,16 +27,24 @@ export interface AuthUser {
   estado: boolean;
 }
 
+export interface StoredAuthUser {
+  id: string;
+  id_rol: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly token = signal<string | null>(this.readStorage(ACCESS_TOKEN_KEY));
   private readonly expiresAt = signal<number | null>(this.readExpiresAt());
-  private readonly user = signal<AuthUser | null>(this.readUser());
+  private readonly user = signal<AuthUser | StoredAuthUser | null>(this.readUser());
 
   readonly currentUser = this.user.asReadonly();
   readonly isAuthenticated = computed(() => this.hasValidSession());
 
-  constructor(private readonly http: HttpClient) {}
+  constructor(
+    private readonly http: HttpClient,
+    private readonly audit: AuditContextService,
+  ) {}
 
   login(credentials: LoginCredentials): Observable<AuthUser> {
     const payload: LoginCredentials = {
@@ -63,6 +72,7 @@ export class AuthService {
   }
 
   clearSession(): void {
+    this.audit.clear();
     this.token.set(null);
     this.expiresAt.set(null);
     this.user.set(null);
@@ -95,7 +105,8 @@ export class AuthService {
 
   private persistUser(user: AuthUser): void {
     this.user.set(user);
-    this.writeStorage(USER_KEY, JSON.stringify(user));
+    const stored: StoredAuthUser = { id: user.id, id_rol: user.id_rol };
+    this.writeStorage(USER_KEY, JSON.stringify(stored));
   }
 
   private readStorage(key: string): string | null {
@@ -128,14 +139,18 @@ export class AuthService {
     return Number.isFinite(parsed) ? parsed : null;
   }
 
-  private readUser(): AuthUser | null {
+  private readUser(): StoredAuthUser | null {
     const raw = this.readStorage(USER_KEY);
     if (!raw) {
       return null;
     }
 
     try {
-      return JSON.parse(raw) as AuthUser;
+      const parsed = JSON.parse(raw) as Partial<StoredAuthUser>;
+      if (typeof parsed.id !== 'string' || typeof parsed.id_rol !== 'string') {
+        return null;
+      }
+      return { id: parsed.id, id_rol: parsed.id_rol };
     } catch {
       return null;
     }
