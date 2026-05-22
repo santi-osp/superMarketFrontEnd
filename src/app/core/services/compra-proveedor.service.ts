@@ -9,6 +9,7 @@ import {
   CompraProveedorUpdate,
   DetalleCompraCreate,
   DetalleCompraRead,
+  DetalleCompraUpdate,
 } from '../../models/api.models';
 
 @Injectable({ providedIn: 'root' })
@@ -40,6 +41,10 @@ export class CompraProveedorService {
 
   addDetalle(id: string, body: DetalleCompraCreate): Observable<DetalleCompraRead> {
     return this.http.post<DetalleCompraRead>(`${this.base}/${id}/detalles`, body);
+  }
+
+  updateDetalle(id: string, body: DetalleCompraUpdate): Observable<DetalleCompraRead> {
+    return this.http.put<DetalleCompraRead>(`${this.base}/detalles/${id}`, body);
   }
 
   deleteDetalle(id: string): Observable<void> {

@@ -126,6 +126,11 @@ body { margin: 0; font-family: var(--app-font-body); }
   overflow: visible !important;
 }
 
+.dialog-body--details {
+  max-height: calc(100dvh - 150px) !important;
+  overflow: auto !important;
+}
+
 .dialog-body .grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
@@ -148,6 +153,48 @@ body { margin: 0; font-family: var(--app-font-body); }
   background: color-mix(in srgb, var(--mat-sys-error-container) 70%, white);
   color: var(--mat-sys-on-error-container);
   font: var(--mat-sys-body-small);
+}
+
+.detail-editor {
+  display: grid;
+  gap: 12px;
+  padding-top: 2px;
+}
+
+.detail-editor__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.detail-editor__head h3 {
+  margin: 0;
+  color: var(--app-ink);
+  font: 600 1rem/1.3 var(--app-font-body);
+}
+
+.detail-editor__head button {
+  flex: 0 0 auto;
+}
+
+.detail-row {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) minmax(112px, 140px) minmax(140px, 170px) 48px;
+  gap: 12px;
+  align-items: start;
+  padding: 12px;
+  border: 1px solid var(--app-border);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--app-surface) 82%, white);
+}
+
+.detail-row__product {
+  min-width: 0;
+}
+
+.detail-row .mat-mdc-icon-button {
+  margin-top: 4px;
 }
 
 .dialog-actions {
@@ -467,5 +514,18 @@ a:focus-visible,
 
   .dialog-body .grid .span-2 {
     grid-column: auto;
+  }
+
+  .detail-editor__head {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .detail-row {
+    grid-template-columns: 1fr 1fr 48px;
+  }
+
+  .detail-row__product {
+    grid-column: 1 / -1;
   }
 }
