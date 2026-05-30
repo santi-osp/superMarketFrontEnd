@@ -2,7 +2,7 @@
   {{ data.mode === 'create' ? 'Nueva compra a proveedor' : 'Editar compra a proveedor' }}
 </h2>
 
-<mat-dialog-content class="dialog-body">
+<mat-dialog-content class="dialog-body dialog-body--details">
   <form [formGroup]="form" class="grid">
     @if (apiError()) {
       <div class="dialog-error">{{ apiError() }}</div>
@@ -30,40 +30,76 @@
       </mat-select>
     </mat-form-field>
 
-    <mat-form-field appearance="outline" class="span-2">
-      <mat-label>Producto</mat-label>
-      <mat-select formControlName="id_producto">
-        @for (p of productos(); track p.id) {
-          <mat-option [value]="p.id">{{ p.nombre }}</mat-option>
-        }
-      </mat-select>
-      @if (form.controls.id_producto.touched && form.controls.id_producto.hasError('required')) {
-        <mat-error>El producto es obligatorio.</mat-error>
-      }
-    </mat-form-field>
-
-    <mat-form-field appearance="outline">
-      <mat-label>Cantidad</mat-label>
-      <input matInput type="number" min="1" formControlName="cantidad" />
-      @if (form.controls.cantidad.touched && form.controls.cantidad.hasError('min')) {
-        <mat-error>La cantidad debe ser mayor a 0.</mat-error>
-      }
-    </mat-form-field>
-
-    <mat-form-field appearance="outline">
-      <mat-label>Precio compra</mat-label>
-      <input matInput type="number" min="0.01" step="0.01" formControlName="precio_compra" />
-      @if (form.controls.precio_compra.touched && form.controls.precio_compra.hasError('min')) {
-        <mat-error>El precio debe ser mayor a 0.</mat-error>
-      }
-    </mat-form-field>
-
     @if (data.mode === 'edit') {
       <mat-form-field appearance="outline" class="span-2">
         <mat-label>Estado</mat-label>
-        <input matInput formControlName="estado" autocomplete="off" />
+        <mat-select formControlName="estado">
+          <mat-option value="recibida">recibida</mat-option>
+          <mat-option value="pedida">pedida</mat-option>
+          <mat-option value="anulada">anulada</mat-option>
+        </mat-select>
       </mat-form-field>
     }
+
+    <section class="detail-editor span-2" formArrayName="detalles">
+      <div class="detail-editor__head">
+        <h3>Productos</h3>
+        <button mat-stroked-button type="button" (click)="addDetalle()" [disabled]="saving()">
+          <mat-icon>add</mat-icon>
+          Agregar producto
+        </button>
+      </div>
+
+      @for (detalle of detalles.controls; track trackDetalle($index, detalle); let i = $index) {
+        <div class="detail-row" [formGroupName]="i">
+          <mat-form-field appearance="outline" class="detail-row__product">
+            <mat-label>Producto</mat-label>
+            <mat-select formControlName="id_producto">
+              @for (p of productos(); track p.id) {
+                <mat-option [value]="p.id">{{ p.nombre }}</mat-option>
+              }
+            </mat-select>
+            @if (
+              detalle.controls.id_producto.touched &&
+              detalle.controls.id_producto.hasError('required')
+            ) {
+              <mat-error>El producto es obligatorio.</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Cantidad</mat-label>
+            <input matInput type="number" min="1" formControlName="cantidad" />
+            @if (detalle.controls.cantidad.touched && detalle.controls.cantidad.hasError('min')) {
+              <mat-error>Mayor a 0.</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Precio compra</mat-label>
+            <input matInput type="number" min="0.01" step="0.01" formControlName="precio_compra" />
+            @if (
+              detalle.controls.precio_compra.touched &&
+              detalle.controls.precio_compra.hasError('min')
+            ) {
+              <mat-error>Mayor a 0.</mat-error>
+            }
+          </mat-form-field>
+
+          <button
+            mat-icon-button
+            color="warn"
+            type="button"
+            aria-label="Quitar producto"
+            matTooltip="Quitar producto"
+            (click)="removeDetalle(i)"
+            [disabled]="saving() || detalles.length <= 1"
+          >
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+      }
+    </section>
   </form>
 </mat-dialog-content>
 

@@ -6,6 +6,7 @@ import { environment } from '../../../environments/environment';
 import {
   DetalleFacturaCreate,
   DetalleFacturaRead,
+  DetalleFacturaUpdate,
   FacturaCreate,
   FacturaRead,
   FacturaUpdate,
@@ -41,6 +42,10 @@ export class FacturaService {
 
   addDetalle(id: string, body: DetalleFacturaCreate): Observable<DetalleFacturaRead> {
     return this.http.post<DetalleFacturaRead>(`${this.base}/${id}/detalles`, body);
+  }
+
+  updateDetalle(id: string, body: DetalleFacturaUpdate): Observable<DetalleFacturaRead> {
+    return this.http.put<DetalleFacturaRead>(`${this.base}/detalles/${id}`, body);
   }
 
   deleteDetalle(id: string): Observable<void> {
