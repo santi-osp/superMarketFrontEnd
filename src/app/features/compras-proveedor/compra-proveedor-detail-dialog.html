@@ -1,0 +1,90 @@
+<h2 mat-dialog-title>Detalle de compra a proveedor</h2>
+
+<mat-dialog-content class="detail-body">
+  @if (loading() && !compra()) {
+    <div class="state-panel compact">
+      <mat-spinner diameter="36" />
+      <p>Cargando compra...</p>
+    </div>
+  } @else if (error()) {
+    <div class="state-panel compact">
+      <mat-icon>error</mat-icon>
+      <h3>No se pudo cargar la compra</h3>
+      <p>{{ error() }}</p>
+      <button mat-stroked-button type="button" (click)="load()">
+        <mat-icon>refresh</mat-icon>
+        Reintentar
+      </button>
+    </div>
+  } @else if (compra(); as c) {
+    <section class="detail-summary">
+      <div>
+        <span class="label">Compra</span>
+        <strong class="id-pill">{{ shortId(c.id) }}</strong>
+      </div>
+      <div>
+        <span class="label">Estado</span>
+        <span class="status-chip" [class.anulada]="estadoClass(c) === 'anulada'">
+          {{ c.estado || 'Sin estado' }}
+        </span>
+      </div>
+      <div>
+        <span class="label">Fecha</span>
+        <strong>{{ formatDate(c.fecha) }}</strong>
+      </div>
+      <div>
+        <span class="label">Total</span>
+        <strong class="total">{{ money(c.total_compra) }}</strong>
+      </div>
+    </section>
+
+    <section class="entity-grid">
+      <div>
+        <span class="label">Proveedor</span>
+        <span class="id-pill">{{ shortId(c.id_proveedor) }}</span>
+      </div>
+      <div>
+        <span class="label">Sucursal</span>
+        <span class="id-pill">{{ shortId(c.id_sucursal) }}</span>
+      </div>
+    </section>
+
+    <section class="line-items">
+      <div class="section-head">
+        <h3>Items</h3>
+        <span>{{ c.detalles.length }} registros</span>
+      </div>
+
+      @if (c.detalles.length === 0) {
+        <div class="state-panel compact">
+          <mat-icon>receipt_long</mat-icon>
+          <p>Esta compra no tiene items asociados.</p>
+        </div>
+      } @else {
+        <div class="detail-table">
+          <div class="detail-row head">
+            <span>Producto</span>
+            <span>Cant.</span>
+            <span>Compra</span>
+            <span>Subtotal</span>
+          </div>
+          @for (d of c.detalles; track d.id) {
+            <div class="detail-row">
+              <span class="product-cell">
+                <strong>{{ productName(d.id_producto) }}</strong>
+                <small>{{ shortId(d.id_producto) }}</small>
+              </span>
+              <span>{{ d.cantidad }}</span>
+              <span>{{ money(d.precio_compra) }}</span>
+              <span>{{ subtotal(d.cantidad, d.precio_compra) }}</span>
+            </div>
+          }
+        </div>
+      }
+    </section>
+  }
+</mat-dialog-content>
+
+<mat-dialog-actions align="end" class="dialog-actions">
+  <button mat-flat-button color="primary" mat-dialog-close>Cerrar</button>
+</mat-dialog-actions>

@@ -7,6 +7,7 @@ import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { filter } from 'rxjs/operators';
 
 import { AuthService } from '../../core/auth.service';
@@ -20,6 +21,7 @@ import {
   CompraProveedorDialogComponent,
   CompraProveedorDialogData,
 } from './compra-proveedor-dialog';
+import { CompraProveedorDetailDialogComponent } from './compra-proveedor-detail-dialog';
 
 @Component({
   selector: 'app-compra-proveedor-list',
@@ -31,6 +33,7 @@ import {
     MatDialogModule,
     MatProgressSpinnerModule,
     MatSnackBarModule,
+    MatTooltipModule,
   ],
   templateUrl: './compra-proveedor-list.html',
   styleUrl: './compra-proveedor-list.scss',
@@ -90,6 +93,15 @@ export class CompraProveedorListComponent implements AfterViewInit {
 
   editar(row: CompraProveedorRead): void {
     this.open({ mode: 'edit', row });
+  }
+
+  verDetalles(row: CompraProveedorRead): void {
+    this.dialog.open(CompraProveedorDetailDialogComponent, {
+      width: '1080px',
+      maxWidth: '96vw',
+      maxHeight: 'calc(100dvh - 32px)',
+      data: { id: row.id, fallback: row },
+    });
   }
 
   anular(row: CompraProveedorRead): void {

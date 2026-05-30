@@ -283,6 +283,12 @@ export interface DetalleFacturaCreate {
   precio_unitario: ApiDecimal;
 }
 
+export interface DetalleFacturaUpdate {
+  id_producto?: ApiId;
+  cantidad?: number;
+  precio_unitario?: ApiDecimal;
+}
+
 export interface DetalleFacturaRead {
   id: ApiId;
   id_factura: ApiId;
@@ -322,6 +328,12 @@ export interface DetalleCompraCreate {
   id_producto: ApiId;
   cantidad: number;
   precio_compra: ApiDecimal;
+}
+
+export interface DetalleCompraUpdate {
+  id_producto?: ApiId;
+  cantidad?: number;
+  precio_compra?: ApiDecimal;
 }
 
 export interface DetalleCompraRead {
