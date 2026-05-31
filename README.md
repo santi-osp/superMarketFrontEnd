@@ -4,15 +4,22 @@ Aplicacion web de administracion para SuperMarket, construida con Angular 20 y A
 
 ## Video
 
-[![Ver video demo](https://img.youtube.com/vi/pUAs-isHxbI/hqdefault.jpg)](https://youtu.be/pUAs-isHxbI)
+[![Ver video demo](https://img.youtube.com/vi/toM-GmfHZpo/hqdefault.jpg)](https://youtu.be/toM-GmfHZpo)
+
+## URLs publicas
+
+- Frontend en produccion: https://santi-osp.github.io/superMarketFrontEnd/
+- Backend en produccion: https://supermarketbackend.onrender.com
+- Swagger del backend: https://supermarketbackend.onrender.com/docs
 
 ## Repositorio backend
 
-https://github.com/mengrau/CarRentingBackEnd.git
+https://github.com/mengrau/superMarketBackEnd.git
 
 ## Tabla de contenido
 
 - Stack
+- URLs publicas
 - Alcance funcional
 - Estructura del proyecto
 - Requisitos
@@ -67,7 +74,7 @@ src/
 
 - Node.js 20+
 - npm 10+
-- Backend FastAPI disponible en http://localhost:8000
+- Backend FastAPI disponible localmente en http://localhost:8000 o en produccion en https://supermarketbackend.onrender.com
 
 Verificar versiones:
 
@@ -101,6 +108,12 @@ En local se usa:
 
 ```ts
 apiUrl: 'http://localhost:8000';
+```
+
+En produccion se usa:
+
+```ts
+apiUrl: 'https://supermarketbackend.onrender.com';
 ```
 
 Si el backend cambia de puerto o dominio, actualizar apiUrl en los archivos de entorno.
@@ -161,7 +174,11 @@ El frontend consume la API de forma directa. El backend debe permitir el origen 
 http://localhost:4200
 ```
 
-Si se despliega en GitHub Pages, agregar el origen https://santi-osp.github.io al backend.
+Para el despliegue actual en GitHub Pages, el backend debe permitir este origen:
+
+```text
+https://santi-osp.github.io
+```
 
 ---
 
@@ -199,7 +216,9 @@ GitHub Pages:
 
 - Workflow: .github/workflows/github-pages.yml
 - Dispara con push a rama PROD o workflow_dispatch
-- Variable opcional: API_URL (si no existe usa http://localhost:8000)
+- URL publicada: https://santi-osp.github.io/superMarketFrontEnd/
+- Variable opcional: API_URL (si no existe usa https://supermarketbackend.onrender.com)
+- El workflow calcula el base href segun el nombre del repositorio y agrega 404.html como fallback para rutas SPA.
 
 Para produccion real, API_URL debe apuntar a un backend HTTPS publico y con CORS permitido.
 
