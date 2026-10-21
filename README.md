@@ -1,248 +1,162 @@
-# SuperMarket FrontEnd
+<p align="center">
+  <img src="docs/images/banner.svg" alt="SuperMarket FrontEnd Banner" width="100%">
+</p>
 
-Aplicacion web de administracion para SuperMarket, construida con Angular 20 y Angular Material. El cliente consume una API REST con JWT, incluye login, rutas protegidas y CRUD de entidades principales.
+<p align="center">
+  <a href="https://santi-osp.github.io/superMarketFrontEnd/"><img src="https://img.shields.io/badge/Production-Live%20Demo-E11D48?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Live Demo"></a>
+  <a href="https://youtu.be/toM-GmfHZpo"><img src="https://img.shields.io/badge/YouTube-Video%20Demo-FF0000?style=for-the-badge&logo=youtube&logoColor=white" alt="Video Demo"></a>
+  <a href="https://supermarketbackend.onrender.com/docs"><img src="https://img.shields.io/badge/FastAPI-Swagger%20Docs-009688?style=for-the-badge&logo=fastapi&logoColor=white" alt="FastAPI Swagger"></a>
+  <img src="https://img.shields.io/badge/Angular-20%20Standalone-DD0031?style=for-the-badge&logo=angular&logoColor=white" alt="Angular 20">
+  <img src="https://img.shields.io/badge/Material-Angular%20Material-3F51B5?style=for-the-badge" alt="Angular Material">
+  <img src="https://img.shields.io/badge/Auth-JWT%20Bearer-000000?style=for-the-badge&logo=jsonwebtokens&logoColor=white" alt="JWT">
+</p>
 
-## Video
+<p align="center">
+  <img src="docs/images/divider.svg" width="100%">
+</p>
 
-[![Ver video demo](https://img.youtube.com/vi/toM-GmfHZpo/hqdefault.jpg)](https://youtu.be/toM-GmfHZpo)
+## 🛒 Visión General
 
-## URLs publicas
+**SuperMarket FrontEnd** es una aplicación web empresarial de administración comercial y punto de venta, desarrollada con **Angular 20** bajo el paradigma de *Standalone Components* y estilizada con **Angular Material**.
 
-- Frontend en produccion: https://santi-osp.github.io/superMarketFrontEnd/
-- Backend en produccion: https://supermarketbackend.onrender.com
-- Swagger del backend: https://supermarketbackend.onrender.com/docs
-
-## Repositorio backend
-
-https://github.com/mengrau/superMarketBackEnd.git
-
-## Tabla de contenido
-
-- Stack
-- URLs publicas
-- Alcance funcional
-- Estructura del proyecto
-- Requisitos
-- Instalacion
-- Configuracion de API
-- Ejecucion local
-- Autenticacion y seguridad
-- CORS
-- Scripts
-- Build y despliegue
-- Troubleshooting
+El cliente se conecta de forma reactiva a una API REST construida en **FastAPI**, implementando autenticación robusta mediante tokens **JWT**, intercepción automática de solicitudes HTTP, control de acceso mediante Guards en rutas protegidas (`/app`), y gestión de estado reactivo desacoplado con **Signals** (`signal` y `computed`).
 
 ---
 
-## Stack
+## 🎬 Demostración en Video y Enlaces Públicos
 
-- Angular 20 con standalone components.
-- Angular Material + SCSS.
-- HttpClient con interceptor JWT.
-- Estado local con signal y computed.
-- Conexion directa a FastAPI (sin proxy).
-- Build y test con Angular CLI.
+<p align="center">
+  <a href="https://youtu.be/toM-GmfHZpo">
+    <img src="https://img.youtube.com/vi/toM-GmfHZpo/hqdefault.jpg" alt="Ver video demostrativo en YouTube" width="800" style="border-radius: 12px; border: 1px solid rgba(255,255,255,0.2);">
+  </a>
+</p>
 
----
-
-## Alcance funcional
-
-- Login JWT y cierre de sesion.
-- Rutas protegidas para la zona /app.
-- Listas CRUD y modales de creacion/edicion para varias entidades.
-- Facturas con detalle y anulado.
-- Inventarios y compras a proveedor.
-- Sidebar con navegacion por modulo.
+| Recurso | Enlace de Acceso Directo |
+| :--- | :--- |
+| **🌐 Frontend en Producción (GitHub Pages)** | [santi-osp.github.io/superMarketFrontEnd](https://santi-osp.github.io/superMarketFrontEnd/) |
+| **⚡ Backend API en Producción (Render)** | [supermarketbackend.onrender.com](https://supermarketbackend.onrender.com) |
+| **📄 Especificación Swagger OpenAPI** | [supermarketbackend.onrender.com/docs](https://supermarketbackend.onrender.com/docs) |
+| **🐙 Repositorio del Backend** | [mengrau/superMarketBackEnd](https://github.com/mengrau/superMarketBackEnd) |
 
 ---
 
-## Estructura del proyecto
+## 📸 Recorrido Visual de la Plataforma
 
-```text
-src/
-  app/
-    core/              # Auth, guards, interceptors, servicios base
-    features/          # Modulos funcionales (clientes, productos, etc.)
-    models/            # Modelos de dominio y tipos de API
-    shared/            # UI compartida
-  environments/        # URLs de API por entorno
+### 🔐 Portal de Acceso Seguro (Login JWT)
+Control de acceso con validaciones reactivas, almacenamiento protegido del token en `localStorage` y expiración automática de sesión.
+
+<p align="center">
+  <img src="docs/screenshots/login-screen.png" alt="Pantalla de Acceso" width="850" style="border-radius: 10px; border: 1px solid rgba(255,255,255,0.15);">
+</p>
+
+<p align="center">
+  <img src="docs/images/divider.svg" width="100%">
+</p>
+
+## ⚡ Módulos y Alcance Funcional
+
+- **🔐 Autenticación & Sesión:** Inicio de sesión con credenciales cifradas, interceptor HTTP para inyectar cabeceras `Authorization: Bearer <token>` y redirección automática en caso de token expirado (HTTP 401).
+- **🧾 Facturación y Ventas:** Generación de facturas con cálculo en vivo de subtotales, impuestos (IVA) y descuentos; soporte para detalle multinivel y anulación auditada de transacciones.
+- **📦 Control de Inventarios:** Catálogo de productos con categorías, stock mínimo de seguridad, control de alertas por agotamiento y kardex de movimientos.
+- **🤝 Compras y Proveedores:** Registro de órdenes de compra recibidas, actualización directa de stock disponible y gestión de catálogo de proveedores autorizados.
+- **📱 Navegación Lateral (Sidebar):** Menú colapsable adaptado a dispositivos móviles y escritorios para acceso rápido a cada submódulo operativo.
+
+---
+
+## 🏛️ Arquitectura del Sistema
+
+```mermaid
+graph TD
+    User[Operador / Administrador] --> SPA[Angular 20 Standalone Application]
+    
+    subgraph Frontend Core
+        SPA --> Router[Angular Router + AuthGuard]
+        Router --> Views[Módulos: Ventas · Inventario · Proveedores]
+        Views --> State[Estado Reactivo: Signals & Computed]
+        State --> Interceptor[HTTP JWT Interceptor]
+    end
+    
+    Interceptor -->|Solicitudes HTTPS con Bearer Token| API[FastAPI Backend en Render]
+    API --> DB[(Base de Datos Relacional)]
 ```
 
 ---
 
-## Requisitos
+## 🚀 Instalación y Puesta en Marcha Local
 
-- Node.js 20+
-- npm 10+
-- Backend FastAPI disponible localmente en http://localhost:8000 o en produccion en https://supermarketbackend.onrender.com
+### Prerrequisitos
+- **Node.js:** Versión 18.x, 20.x o 22.x LTS
+- **Angular CLI:** `npm install -g @angular/cli@20`
 
-Verificar versiones:
-
+### 1. Clonar el repositorio
 ```bash
-node -v
-npm -v
+git clone https://github.com/santi-osp/superMarketFrontEnd.git
+cd superMarketFrontEnd
 ```
 
----
-
-## Instalacion
-
-Desde superMarketFrontEnd:
-
+### 2. Instalar dependencias
 ```bash
 npm install
 ```
 
----
-
-## Configuracion de API
-
-Archivos de entorno:
-
-- src/environments/environment.ts
-- src/environments/environment.dev.ts
-- src/environments/environment.qa.ts
-- src/environments/environment.prod.ts
-
-En local se usa:
-
-```ts
-apiUrl: 'http://localhost:8000';
+### 3. Configuración de API
+Para apuntar a tu backend local de FastAPI o al entorno de producción, configura `src/environments/environment.ts`:
+```typescript
+export const environment = {
+  production: false,
+  apiUrl: 'http://localhost:8000' // O 'https://supermarketbackend.onrender.com'
+};
 ```
 
-En produccion se usa:
-
-```ts
-apiUrl: 'https://supermarketbackend.onrender.com';
-```
-
-Si el backend cambia de puerto o dominio, actualizar apiUrl en los archivos de entorno.
-
----
-
-## Ejecucion local
-
+### 4. Iniciar servidor de desarrollo
 ```bash
-npm start
+npm run start
+```
+Abre tu navegador en `http://localhost:4200/`.
+
+### 5. Compilación para producción
+```bash
+npm run build -- --configuration production
 ```
 
-La app queda en:
+---
+
+## 📁 Estructura del Código Fuente
 
 ```text
-http://localhost:4200
-```
-
-Backend esperado:
-
-```bash
-cd ../superMarketBackEnd
-python -m uvicorn src.main:app --reload --host 127.0.0.1 --port 8000
-```
-
----
-
-## Autenticacion y seguridad
-
-Flujo actual:
-
-1. Login con POST /auth/login
-2. Consulta de usuario con GET /auth/me
-3. Token JWT en localStorage
-4. Id y rol del usuario en localStorage para permisos
-5. Authorization: Bearer <token> en cada request protegida
-
-Guards:
-
-- loginRedirectGuard: evita volver a /login con sesion activa
-- auditUserGuard: protege /app si no hay sesion valida
-- roleGuard: valida acceso por rol segun la ruta
-
-Claves locales usadas:
-
-- auth_access_token
-- auth_expires_at
-- auth_user (id y rol)
-- pos_audit_usuario_id
-
----
-
-## CORS
-
-El frontend consume la API de forma directa. El backend debe permitir el origen del front con CORS_ALLOW_ORIGINS. Ejemplo para local:
-
-```text
-http://localhost:4200
-```
-
-Para el despliegue actual en GitHub Pages, el backend debe permitir este origen:
-
-```text
-https://santi-osp.github.io
+superMarketFrontEnd/
+├── docs/
+│   ├── images/
+│   │   ├── banner.svg           # Hero banner vectorial
+│   │   └── divider.svg          # Separador decorativo
+│   └── screenshots/
+│       └── login-screen.png     # Captura de pantalla oficial
+├── public/                      # Recursos estáticos
+├── src/
+│   ├── app/
+│   │   ├── core/                # Interceptores HTTP, servicios de auth y guards
+│   │   ├── models/              # Interfaces y DTOs de TypeScript
+│   │   ├── pages/               # Vistas principales (Login, Ventas, Inventarios)
+│   │   ├── shared/              # Componentes visuales reutilizables de Material
+│   │   └── app.routes.ts        # Definición de rutas protegidas
+│   ├── environments/            # Variables de entorno dev/prod
+│   ├── index.html
+│   ├── main.ts                  # Bootstrap standalone de Angular
+│   └── styles.scss              # Estilos globales y temas Material
+├── angular.json
+└── package.json
 ```
 
 ---
 
-## Scripts
+## 👨‍💻 Autor y Contacto
 
-```bash
-npm start
-npm run start:dev
-npm run start:qa
-npm run start:prod
-npm run build
-npm run build:dev
-npm run build:qa
-npm run build:prod
-npm test
-```
-
-Salida de build:
-
-```text
-dist/web
-```
+Desarrollado por **Santiago Ospina Arango**  
+- **GitHub:** [@santi-osp](https://github.com/santi-osp)  
+- **Demo en Vivo:** [santi-osp.github.io/superMarketFrontEnd](https://santi-osp.github.io/superMarketFrontEnd/)
 
 ---
 
-## Build y despliegue
-
-Build local:
-
-```bash
-npm run build:prod
-```
-
-GitHub Pages:
-
-- Workflow: .github/workflows/github-pages.yml
-- Dispara con push a rama PROD o workflow_dispatch
-- URL publicada: https://santi-osp.github.io/superMarketFrontEnd/
-- Variable opcional: API_URL (si no existe usa https://supermarketbackend.onrender.com)
-- El workflow calcula el base href segun el nombre del repositorio y agrega 404.html como fallback para rutas SPA.
-
-Para produccion real, API_URL debe apuntar a un backend HTTPS publico y con CORS permitido.
-
----
-
-## Troubleshooting
-
-### Error CORS
-
-- Confirmar backend en http://localhost:8000
-- Verificar que el backend permita el origen del front en CORS_ALLOW_ORIGINS
-
-### Error 401
-
-- Cerrar sesion
-- Limpiar localStorage
-- Volver a iniciar sesion
-
-### No carga GitHub Pages
-
-- Verificar workflow en rama PROD
-- Verificar Pages habilitado en GitHub
-- Verificar API_URL si el backend no esta en localhost
-
-### Backend en otro puerto
-
-- Actualizar apiUrl en los archivos environment.\*.ts o API_URL en GitHub
+<p align="center">
+  <sub>SuperMarket FrontEnd · Desarrollado con Angular 20 y Material Design.</sub>
+</p>

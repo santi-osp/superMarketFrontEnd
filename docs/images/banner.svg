@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 360" width="100%" height="100%">
+  <defs>
+    <linearGradient id="smBgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1E1B4B" />
+      <stop offset="50%" stop-color="#31103F" />
+      <stop offset="100%" stop-color="#4C0519" />
+    </linearGradient>
+    <linearGradient id="smAccentGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#F43F5E" />
+      <stop offset="50%" stop-color="#FB7185" />
+      <stop offset="100%" stop-color="#FDA4AF" />
+    </linearGradient>
+    <pattern id="smGrid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(255, 255, 255, 0.04)" stroke-width="1" />
+    </pattern>
+    <filter id="smGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="30" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="360" rx="16" fill="url(#smBgGrad)" />
+  <rect width="1200" height="360" rx="16" fill="url(#smGrid)" />
+
+  <!-- Ambient Glow -->
+  <circle cx="1020" cy="110" r="160" fill="#E11D48" opacity="0.16" filter="url(#smGlow)" />
+  <circle cx="220" cy="270" r="140" fill="#6366F1" opacity="0.12" filter="url(#smGlow)" />
+
+  <!-- Status Badge -->
+  <g transform="translate(80, 52)">
+    <rect width="260" height="32" rx="16" fill="rgba(255, 255, 255, 0.06)" stroke="rgba(244, 63, 94, 0.3)" stroke-width="1" />
+    <circle cx="16" cy="16" r="4.5" fill="#F43F5E" />
+    <text x="30" y="21" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11.5" font-weight="600" fill="#FDA4AF" letter-spacing="1.2">ENTERPRISE MANAGEMENT SPA</text>
+  </g>
+
+  <!-- Title & Narrative -->
+  <g transform="translate(80, 142)">
+    <text font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="44" font-weight="800" fill="#FFFFFF" letter-spacing="-0.5">
+      SuperMarket <tspan fill="url(#smAccentGrad)">FrontEnd</tspan>
+    </text>
+    <text y="42" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="16.5" font-weight="400" fill="#F1F5F9" letter-spacing="0.2">
+      Plataforma Web de Facturación, Inventarios, Proveedores y Punto de Venta
+    </text>
+    <text y="70" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="14" font-weight="500" fill="#FB7185">
+      Angular 20 Standalone · Angular Material · Reactive Signals · JWT Interceptor
+    </text>
+  </g>
+
+  <!-- Key Metrics Row -->
+  <g transform="translate(80, 260)">
+    <rect x="0" y="0" width="180" height="46" rx="8" fill="rgba(255, 255, 255, 0.05)" stroke="rgba(255, 255, 255, 0.1)" />
+    <text x="16" y="20" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto" font-size="10.5" font-weight="600" fill="#FB7185" text-transform="uppercase">FRAMEWORK</text>
+    <text x="16" y="38" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto" font-size="13.5" font-weight="700" fill="#FFFFFF">Angular 20 Standalone</text>
+
+    <rect x="200" y="0" width="180" height="46" rx="8" fill="rgba(255, 255, 255, 0.05)" stroke="rgba(255, 255, 255, 0.1)" />
+    <text x="16" y="20" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto" font-size="10.5" font-weight="600" fill="#FB7185" text-transform="uppercase">SEGURIDAD</text>
+    <text x="16" y="38" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto" font-size="13.5" font-weight="700" fill="#38BDF8">JWT Bearer Guards</text>
+
+    <rect x="400" y="0" width="180" height="46" rx="8" fill="rgba(255, 255, 255, 0.05)" stroke="rgba(255, 255, 255, 0.1)" />
+    <text x="16" y="20" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto" font-size="10.5" font-weight="600" fill="#FB7185" text-transform="uppercase">ESTADO REACTIVO</text>
+    <text x="16" y="38" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto" font-size="13.5" font-weight="700" fill="#34D399">Signals &amp; Computed</text>
+  </g>
+
+  <!-- Right Visual: Angular Shield & Shopping Cart -->
+  <g transform="translate(910, 75)">
+    <rect x="0" y="0" width="220" height="190" rx="14" fill="rgba(30, 27, 75, 0.85)" stroke="rgba(244, 63, 94, 0.3)" stroke-width="1.5" />
+    
+    <!-- Shield Outline -->
+    <path d="M 110 30 L 160 50 L 150 115 L 110 145 L 70 115 L 60 50 Z" fill="rgba(225, 29, 72, 0.2)" stroke="#F43F5E" stroke-width="2" />
+    <!-- Angular A -->
+    <path d="M 110 50 L 85 110 L 98 110 L 104 95 L 116 95 L 122 110 L 135 110 Z M 107 83 L 110 73 L 113 83 Z" fill="#FFFFFF" />
+
+    <!-- Subtext bar -->
+    <rect x="25" y="148" width="170" height="24" rx="6" fill="rgba(255, 255, 255, 0.06)" />
+    <text x="110" y="164" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI'" font-size="10.5" font-weight="700" fill="#FDA4AF" text-anchor="middle">API Client &amp; Admin Panel</text>
+  </g>
+</svg>
